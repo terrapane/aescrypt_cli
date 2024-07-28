@@ -1,0 +1,3 @@
+AES Crypt encrypts and decrypts files using the Advanced Encryption Standard
+(AES) and a user-provided password or key file.  This package contains
+the command-line utility one can use from a terminal or via cron.

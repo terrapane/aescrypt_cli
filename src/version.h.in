@@ -1,0 +1,25 @@
+/*
+ *  version.h
+ *
+ *  Copyright (C) 2024
+ *  Terrapane Corporation
+ *  All Rights Reserved
+ *
+ *  Author:
+ *      Paul E. Jones <paulej@packetizer.com>
+ *
+ *  Description:
+ *      Defines version information strings that will be used in the project.
+ *
+ *  Portability Issues:
+ *      None.
+ */
+
+#pragma once
+
+#include <string>
+
+static const std::string Project_Name = "@PROJECT_NAME@";
+static const std::string Project_Version = "@PROJECT_VERSION@";
+static const std::string Copyright_Text = "@COPYRIGHT_TEXT@";
+static const std::string Author_Text = "@AUTHOR_TEXT@";

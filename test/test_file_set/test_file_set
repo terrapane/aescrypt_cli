@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Get the AES Crypt binary
+AESCRYPT="$1"
+
+# Ensure this is not an empty string
+if [ -z "$AESCRYPT" ] ; then
+    echo "First argument should be the AES Crypt binary"
+    exit 1
+fi
+
+# Ensure the executable binary exists (and is executable)
+if [ ! -x "$AESCRYPT" ] ; then
+    echo "AES Crypt executable not found: $AESCRYPT"
+    exit 1
+fi
+
+# Switch directories to where the test process resides
+cd $( dirname "${BASH_SOURCE[0]}" ) || exit 1
+
+# Perform tests over each of the test vectors
+for x in $(ls -1 vectors/*.dat)
+do
+    # Encrypt the data file
+    echo Test vector: $x
+    "$AESCRYPT" -q -e -i 8192 -p password -o - $x | \
+        "$AESCRYPT" -q -d -p password -o /tmp/aescrypt.$$ -
+    if [ ! -f /tmp/aescrypt.$$ ] ; then
+        echo Error with test vector: $x
+        exit 1
+    fi
+    diff $x /tmp/aescrypt.$$ >/dev/null || {
+        echo Error with test vector: $x
+        rm -f /tmp/aescrypt.$$
+        exit 1
+    }
+    rm -f /tmp/aescrypt.$$
+done

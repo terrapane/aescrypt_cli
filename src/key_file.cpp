@@ -76,7 +76,7 @@ static const char Key_Characters[64] =
  *      are strongly recommended.  As an aside, older versions of AES Crypt
  *      used UTF-16LE for password files.
  */
-bool GenerateKeyFile(const Terra::Logger::LoggerPointer parent_logger,
+bool GenerateKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
                      const SecureString &key_file,
                      std::size_t key_size)
 {
@@ -178,14 +178,11 @@ bool GenerateKeyFile(const Terra::Logger::LoggerPointer parent_logger,
     rng.GetRandomOctets(key);
 
     // Convert each to printable character (retains 6 bits of entropy)
-    for (std::size_t i = 0; i < key.size(); i++)
-    {
-        // Transform key octets to ASCII from the Key_Characters table
-        key[i] = static_cast<std::uint8_t>(Key_Characters[(key[i] & 0x3f)]);
-    }
+    for (auto &value : key) value = Key_Characters[(value & 0x3f)];
 
     // Output a stream of octets
-    stream.write(reinterpret_cast<char *>(key.data()), key.size());
+    stream.write(reinterpret_cast<char *>(key.data()),
+                 static_cast<std::streamsize>(key.size()));
 
     // Check for write errors
     if (!stream.good())
@@ -202,7 +199,7 @@ bool GenerateKeyFile(const Terra::Logger::LoggerPointer parent_logger,
             try
             {
                 if (file_stream.is_open()) file_stream.close();
-                std::filesystem::remove(std::filesystem::path(key_file));
+                std::filesystem::remove(std::filesystem::path(u8name));
             }
             catch (const std::filesystem::filesystem_error &e)
             {
@@ -259,7 +256,7 @@ bool GenerateKeyFile(const Terra::Logger::LoggerPointer parent_logger,
  *  Comments:
  *      None.
  */
-SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer parent_logger,
+SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
                            const SecureString &key_file)
 {
     SecureU8String key;
@@ -321,7 +318,7 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer parent_logger,
     // Read the entire file
     while (!stream.eof())
     {
-        char octet;
+        char octet{};
 
         // Read a single character
         stream.get(octet);
@@ -337,9 +334,6 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer parent_logger,
 
         // Store octet is not EOF
         if (!stream.eof()) key.push_back(octet);
-
-        // Set the octet to 0
-        octet = '\0';
     }
 
     // Close the key file if still open
@@ -382,7 +376,7 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer parent_logger,
     }
 
     // UTF-16 data should have an even number of octets
-    if (key.length() & 0x01)
+    if ((key.length() & 0x01) != 0)
     {
         logger->error << "Key has an odd number of octets; UTF-16 data has "
                          "an even number of octets"

@@ -35,7 +35,8 @@
  *      The error message string.
  *
  *  Comments:
- *      None.
+ *      This function may not be thread safe due to the call to strerror().
+ *      Check operating system documentation if in doubt.
  */
 std::string GetErrorString(int error)
 {
@@ -62,7 +63,7 @@ std::string GetErrorString(int error)
  *  Comments:
  *      None.
  */
-void LogSystemError(const Terra::Logger::LoggerPointer logger,
+void LogSystemError(const Terra::Logger::LoggerPointer &logger,
                     const std::string &message)
 {
     std::string os_error = GetErrorString(errno);

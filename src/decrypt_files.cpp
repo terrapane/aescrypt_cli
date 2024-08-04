@@ -67,7 +67,8 @@ bool HasAESExtension(const SecureString &filename)
     }
     catch (...)
     {
-        // Nothing to do; failure assumes false
+        // If there is a failure there is not a .aes extension
+        return false;
     }
 
     return false;
@@ -113,7 +114,7 @@ bool HasAESExtension(const SecureString &filename)
  *      None.
  */
 bool DecryptStream(
-    const Terra::Logger::LoggerPointer logger,
+    const Terra::Logger::LoggerPointer &logger,
     ProcessControl &process_control,
     bool quiet,
     const SecureU8String &password,
@@ -121,7 +122,7 @@ bool DecryptStream(
     std::istream &istream,
     std::ostream &ostream)
 {
-    Terra::AESCrypt::Engine::DecryptResult decrypt_result;
+    Terra::AESCrypt::Engine::DecryptResult decrypt_result{};
     bool decryption_complete{};
     bool cancel_decryption{};
 
@@ -185,8 +186,7 @@ bool DecryptStream(
                             });
 
     // If the process should terminate, cancel decryption if still going
-    cancel_decryption = (process_control.terminate == true) &&
-                        (decryption_complete == false);
+    cancel_decryption = process_control.terminate && (!decryption_complete);
 
     // Unlock the mutex
     lock.unlock();
@@ -259,7 +259,7 @@ bool DecryptStream(
  *      None.
  */
 bool DecryptFiles(
-    const Terra::Logger::LoggerPointer parent_logger,
+    const Terra::Logger::LoggerPointer &parent_logger,
     ProcessControl &process_control,
     const bool quiet,
     const SecureU8String &password,
@@ -282,12 +282,26 @@ bool DecryptFiles(
     {
         for (const auto &in_file : filenames)
         {
-            if (!HasAESExtension(in_file))
+            try
             {
-                logger->error << "Input file does not end with .aes: "
-                              << in_file << std::flush;
-                std::cerr << "Input file does not end with .aes and no output "
-                             "file was specified: " << in_file << std::endl;
+                if (!HasAESExtension(in_file))
+                {
+                    logger->error << "Input file does not end with .aes: "
+                                << in_file << std::flush;
+                    std::cerr << "Input file does not end with .aes and no "
+                                 "output file was specified: "
+                              << in_file << std::endl;
+                    return false;
+                }
+            }
+            catch (const std::exception &e)
+            {
+                logger->error << "Exception trying to determine if filename "
+                                 "has .aes extension"
+                              << std::flush;
+                std::cerr << "Exception trying to determine if filename has "
+                             ".aes extension"
+                          << std::endl;
                 return false;
             }
         }
@@ -396,7 +410,9 @@ bool DecryptFiles(
         std::istream &istream = ((in_file == "-") ? std::cin : ifs);
 
         // Set the buffer to use for reading
-        istream.rdbuf()->pubsetbuf(read_buffer.data(), read_buffer.size());
+        istream.rdbuf()->pubsetbuf(
+            read_buffer.data(),
+            static_cast<std::streamsize>(read_buffer.size()));
 
         // Open the output stream
         if (out_file != "-")
@@ -493,7 +509,9 @@ bool DecryptFiles(
         std::ostream &ostream = ((out_file == "-") ? std::cout : ofs);
 
         // Set the buffer to use for writing
-        ofs.rdbuf()->pubsetbuf(write_buffer.data(), write_buffer.size());
+        ofs.rdbuf()->pubsetbuf(
+            write_buffer.data(),
+            static_cast<std::streamsize>(write_buffer.size()));
 
         // Decrypt the input stream to the output stream
         bool result = DecryptStream(logger,
@@ -514,7 +532,7 @@ bool DecryptFiles(
         }
 
         // Did decryption fail?
-        if (result == false)
+        if (!result)
         {
             // Remove the partial output file if possible
             if (remove_on_fail)
@@ -553,7 +571,7 @@ bool DecryptFiles(
         }
 
         // If termination requested, return
-        if (process_control.terminate == true) return false;
+        if (process_control.terminate) return false;
     }
 
     logger->info << "Decryption process complete" << std::flush;

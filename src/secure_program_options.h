@@ -29,7 +29,7 @@ class SecureOptionsParser : public Terra::ProgramOptions::Parser
         using Terra::ProgramOptions::Parser::Parser;
         virtual ~SecureOptionsParser()
         {
-            ClearOptions();
+            SecureOptionsParser::ClearOptions();
         }
         virtual void ClearOptions()
         {

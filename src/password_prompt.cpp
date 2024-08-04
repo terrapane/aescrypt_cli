@@ -65,7 +65,7 @@ namespace
  *      using either "-p" or "-k".
  */
 std::pair<PasswordResult, SecureU8String> ReadTerminalText(
-                                    const Terra::Logger::LoggerPointer logger,
+                                    const Terra::Logger::LoggerPointer &logger,
                                     const std::string &prompt)
 {
     PasswordResult password_result = PasswordResult::Success;
@@ -201,10 +201,10 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
  *  Comments:
  *      None.
  */
-std::pair<bool, bool> TurnOffEcho(const Terra::Logger::LoggerPointer logger,
+std::pair<bool, bool> TurnOffEcho(const Terra::Logger::LoggerPointer &logger,
                                   int fd)
 {
-    termios tty_attributes;
+    termios tty_attributes{};
 
     // Get the TTY attributes
     if (tcgetattr(fd, &tty_attributes) == -1)
@@ -214,7 +214,7 @@ std::pair<bool, bool> TurnOffEcho(const Terra::Logger::LoggerPointer logger,
     }
 
     // Disable echo if it is on
-    if (tty_attributes.c_lflag & ECHO)
+    if ((tty_attributes.c_lflag & ECHO) != 0)
     {
         tty_attributes.c_lflag &= ~ECHO;
         if (tcsetattr(fd, TCSANOW, &tty_attributes) == -1)
@@ -251,10 +251,10 @@ std::pair<bool, bool> TurnOffEcho(const Terra::Logger::LoggerPointer logger,
  *  Comments:
  *      None.
  */
-std::pair<bool, bool> TurnOnEcho(const Terra::Logger::LoggerPointer logger,
+std::pair<bool, bool> TurnOnEcho(const Terra::Logger::LoggerPointer &logger,
                                  int fd)
 {
-    termios tty_attributes;
+    termios tty_attributes{};
 
     // Get the TTY attributes
     if (tcgetattr(fd, &tty_attributes) == -1)
@@ -264,7 +264,7 @@ std::pair<bool, bool> TurnOnEcho(const Terra::Logger::LoggerPointer logger,
     }
 
     // Enable echo if it is off
-    if (!(tty_attributes.c_lflag & ECHO))
+    if ((tty_attributes.c_lflag & ECHO) == 0)
     {
         tty_attributes.c_lflag |= ECHO;
         if (tcsetattr(fd, TCSANOW, &tty_attributes) == -1)
@@ -302,7 +302,7 @@ std::pair<bool, bool> TurnOnEcho(const Terra::Logger::LoggerPointer logger,
  *      None.
  */
 std::pair<PasswordResult, SecureU8String> ReadTerminalText(
-                                    const Terra::Logger::LoggerPointer logger,
+                                    const Terra::Logger::LoggerPointer &logger,
                                     const std::string &prompt)
 {
     PasswordResult password_result = PasswordResult::Success;
@@ -310,7 +310,7 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
     SecureU8String c(1,' ');
 
     // Open the TTY for reading / writing
-    int fd = open("/dev/tty", O_RDWR);
+    int fd = open("/dev/tty", O_RDWR | O_CLOEXEC);
 
     // If there was an error, report and return
     if (fd == -1)
@@ -321,7 +321,7 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
 
     // Turn off echo
     auto [echo_off_result, echo_disabled] = TurnOffEcho(logger, fd);
-    if (echo_off_result == false) return {PasswordResult::UnspecifiedError, {}};
+    if (!echo_off_result) return {PasswordResult::UnspecifiedError, {}};
 
     // Emit the prompt
     if (write(fd, prompt.data(), prompt.size()) == -1)
@@ -414,7 +414,7 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
  *      None.
  */
 std::pair<PasswordResult, SecureU8String> GetUserPassword(
-                            const Terra::Logger::LoggerPointer parent_logger,
+                            const Terra::Logger::LoggerPointer &parent_logger,
                             bool verify_input)
 {
     // Create a child logger

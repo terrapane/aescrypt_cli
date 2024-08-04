@@ -57,5 +57,5 @@ enum class PasswordResult
  *      None.
  */
 std::pair<PasswordResult, SecureU8String> GetUserPassword(
-    const Terra::Logger::LoggerPointer parent_logger,
-    bool verify_input);
+                            const Terra::Logger::LoggerPointer &parent_logger,
+                            bool verify_input);

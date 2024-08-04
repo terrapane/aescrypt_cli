@@ -77,7 +77,7 @@ namespace
  *      None.
  */
 bool EncryptStream(
-    const Terra::Logger::LoggerPointer logger,
+    const Terra::Logger::LoggerPointer &logger,
     ProcessControl &process_control,
     bool quiet,
     const SecureU8String &password,
@@ -87,7 +87,7 @@ bool EncryptStream(
     std::istream &istream,
     std::ostream &ostream)
 {
-    Terra::AESCrypt::Engine::EncryptResult encrypt_result;
+    Terra::AESCrypt::Engine::EncryptResult encrypt_result{};
     bool encryption_complete{};
     bool cancel_encryption{};
 
@@ -154,8 +154,7 @@ bool EncryptStream(
                             });
 
     // If the process should terminate, cancel encrytion if still going
-    cancel_encryption = (process_control.terminate == true) &&
-                        (encryption_complete == false);
+    cancel_encryption = process_control.terminate && (!encryption_complete);
 
     // Unlock the mutex
     lock.unlock();
@@ -236,7 +235,7 @@ bool EncryptStream(
  *      None.
  */
 bool EncryptFiles(
-    const Terra::Logger::LoggerPointer parent_logger,
+    const Terra::Logger::LoggerPointer &parent_logger,
     ProcessControl &process_control,
     const bool quiet,
     const SecureU8String &password,
@@ -348,7 +347,9 @@ bool EncryptFiles(
         std::istream &istream = ((in_file == "-") ? std::cin : ifs);
 
         // Set the buffer to use for reading
-        istream.rdbuf()->pubsetbuf(read_buffer.data(), read_buffer.size());
+        istream.rdbuf()->pubsetbuf(
+            read_buffer.data(),
+            static_cast<std::streamsize>(read_buffer.size()));
 
         // Open the output stream
         if (out_file != "-")
@@ -445,7 +446,9 @@ bool EncryptFiles(
         std::ostream &ostream = ((out_file == "-") ? std::cout : ofs);
 
         // Set the buffer to use for writing
-        ofs.rdbuf()->pubsetbuf(write_buffer.data(), write_buffer.size());
+        ofs.rdbuf()->pubsetbuf(
+            write_buffer.data(),
+            static_cast<std::streamsize>(write_buffer.size()));
 
         // Encrypt the input stream to the output stream
         bool result = EncryptStream(logger,
@@ -468,7 +471,7 @@ bool EncryptFiles(
         }
 
         // Did encryption fail?
-        if (result == false)
+        if (!result)
         {
             // Remove the partial output file if possible
             if (remove_on_fail)
@@ -507,7 +510,7 @@ bool EncryptFiles(
         }
 
         // If termination requested, return
-        if (process_control.terminate == true) return false;
+        if (process_control.terminate) return false;
     }
 
     logger->info << "Encryption process complete" << std::flush;

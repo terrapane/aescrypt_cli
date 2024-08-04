@@ -571,8 +571,8 @@ int main(int argc, char *argv[])
     // Parse the program options using the program_options object
     auto [parse_success, parse_continue] =
                                     ParseOptions(options_parser, argc, argv);
-    if (parse_success == false) return EXIT_FAILURE;
-    if (parse_continue == false) return EXIT_SUCCESS;
+    if (!parse_success) return EXIT_FAILURE;
+    if (!parse_continue) return EXIT_SUCCESS;
 
     try
     {
@@ -694,7 +694,7 @@ int main(int argc, char *argv[])
                  user_password.size()});
 
             // If the encoding is invalid, do not proceed
-            if (valid_encoding == false)
+            if (!valid_encoding)
             {
                 std::cerr << "Password is not in UTF-8 format" << std::endl;
                 return EXIT_FAILURE;
@@ -750,8 +750,8 @@ int main(int argc, char *argv[])
 
             options_parser.GetOptionValue("keysize",
                                           key_size,
-                                          std::size_t(Min_Key_File_Size),
-                                          std::size_t(Max_Key_File_Size));
+                                          Min_Key_File_Size,
+                                          Max_Key_File_Size);
         }
 
         // Use a user-specified number of KDF iterations?
@@ -873,7 +873,7 @@ int main(int argc, char *argv[])
     }
 
     // If a key file was provided, read the key file
-    if (key_file.length() > 0)
+    if (!key_file.empty())
     {
         // Read the key file (converting it to a password)
         password = ReadKeyFile(logger, key_file);
@@ -941,35 +941,51 @@ int main(int argc, char *argv[])
     // Install signal handlers to ensure proper cleanup if user aborts
     InstallSignalHandlers();
 
-    // If encrypting, do that now
-    if (mode == AESCryptMode::Encrypt)
+    try
     {
-        // Create extensions vector to be inserted into AES Crypt stream header
-        const std::vector<std::pair<std::string, std::string>> extensions =
+        // If encrypting, do that now
+        if (mode == AESCryptMode::Encrypt)
         {
-            {"CREATED_BY", Project_Name + " " + Project_Version}
-        };
+            // Create extensions vector to be inserted into stream header
+            const std::vector<std::pair<std::string, std::string>> extensions =
+            {
+                {"CREATED_BY", Project_Name + " " + Project_Version}
+            };
 
-        // Encrypt files, disabling progress updates if using stdout or logging
-        bool encrypt_result = EncryptFiles(logger,
-                                           process_control,
-                                           (quiet || using_stdout),
-                                           password,
-                                           iterations,
-                                           filenames,
-                                           output_file,
-                                           extensions);
+            // Encrypt files, disabling progress updates as appropriate
+            bool encrypt_result = EncryptFiles(logger,
+                                            process_control,
+                                            (quiet || using_stdout),
+                                            password,
+                                            iterations,
+                                            filenames,
+                                            output_file,
+                                            extensions);
 
-        return (encrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
+            return (encrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
+        }
+
+        // Decrypt files, disabling progress updates as appropriate
+        auto decrypt_result = DecryptFiles(logger,
+                                        process_control,
+                                        (quiet || using_stdout),
+                                        password,
+                                        filenames,
+                                        output_file);
+
+        return (decrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
     }
-
-    // Decrypt files, disabling progress updates if using stdout or logging
-    auto decrypt_result = DecryptFiles(logger,
-                                       process_control,
-                                       (quiet || using_stdout),
-                                       password,
-                                       filenames,
-                                       output_file);
-
-    return (decrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
+    catch (const std::exception &e)
+    {
+        logger->critical << "Exception caught in main: " << e.what();
+        std::cerr << "Failed due to unhandled exception caught in main: "
+                  << e.what();
+        return EXIT_FAILURE;
+    }
+    catch (...)
+    {
+        logger->critical << "Unknown exception caught in main";
+        std::cerr << "Unknown exception caught in main; exiting";
+        return EXIT_FAILURE;
+    }
 }

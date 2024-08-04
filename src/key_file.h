@@ -47,9 +47,9 @@
  *  Comments:
  *      None.
  */
-bool GenerateKeyFile(const Terra::Logger::LoggerPointer parent_logger,
+bool GenerateKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
                      const SecureString &key_file,
-                     std::size_t key_length);
+                     std::size_t key_size);
 
 /*
  *  ReadKeyFile()
@@ -72,5 +72,5 @@ bool GenerateKeyFile(const Terra::Logger::LoggerPointer parent_logger,
  *  Comments:
  *      None.
  */
-SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer parent_logger,
+SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
                            const SecureString &key_file);

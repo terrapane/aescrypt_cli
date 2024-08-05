@@ -35,9 +35,9 @@ class SecureOptionsParser : public Terra::ProgramOptions::Parser
         {
             for (auto &[option_name, option_values] : option_map)
             {
-                for (auto &option : option_values)
+                for (auto &option_value : option_values)
                 {
-                    Terra::SecUtil::SecureErase(option);
+                    Terra::SecUtil::SecureErase(option_value);
                 }
             }
             option_map.clear();

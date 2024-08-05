@@ -31,8 +31,9 @@ class SecureOptionsParser : public Terra::ProgramOptions::Parser
         {
             SecureOptionsParser::ClearOptions();
         }
-        virtual void ClearOptions()
+        void ClearOptions() override
         {
+            // Iterate over each option value and zero memory
             for (auto &[option_name, option_values] : option_map)
             {
                 for (auto &option_value : option_values)
@@ -40,6 +41,8 @@ class SecureOptionsParser : public Terra::ProgramOptions::Parser
                     Terra::SecUtil::SecureErase(option_value);
                 }
             }
-            option_map.clear();
+
+            // Call the parent object's ClearOptions function
+            Terra::ProgramOptions::Parser::ClearOptions();
         }
 };

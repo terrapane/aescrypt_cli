@@ -3,7 +3,7 @@
 ## Acquiring a License
 
 AES Crypt is commercial software.  A license may be purchased by visiting the
-[web site](https://www.aescrypt.com).  You may download the software and try it
+[website](https://www.aescrypt.com).  You may download the software and try it
 to see if it meets your needs, but please purchase a license if you find
 the software useful.  Your financial support is important so we can
 continue to improve and enhance this and our other software products.

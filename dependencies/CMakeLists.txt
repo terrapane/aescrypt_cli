@@ -11,43 +11,43 @@ endif()
 # Fetch the AES Crypt Engine
 FetchContent_Declare(aescrypt_engine
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/aescrypt_engine.git
-    GIT_TAG        master
+    GIT_TAG        v4.0.0
     GIT_SHALLOW    true)
 
 # Fetch the Program Options library
 FetchContent_Declare(program_options
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/program_options.git
-    GIT_TAG        master
+    GIT_TAG        v1.0.0
     GIT_SHALLOW    true)
 
 # Fetch the Console I/O library
 FetchContent_Declare(conio
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/conio.git
-    GIT_TAG        master
+    GIT_TAG        v1.0.0
     GIT_SHALLOW    true)
 
 # Fetch the Logger library
 FetchContent_Declare(logger
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/logger.git
-    GIT_TAG        master
+    GIT_TAG        v1.0.0
     GIT_SHALLOW    true)
 
 # Fetch the Security Utilities library
 FetchContent_Declare(secutil
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/secutil.git
-    GIT_TAG        master
+    GIT_TAG        v1.0.0
     GIT_SHALLOW    true)
 
 # Fetch the Random Number Generator library
 FetchContent_Declare(random
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/random.git
-    GIT_TAG        master
+    GIT_TAG        v1.0.0
     GIT_SHALLOW    true)
 
 # Fetch the character utilities library
 FetchContent_Declare(charutil
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/charutil.git
-    GIT_TAG        master
+    GIT_TAG        v1.0.0
     GIT_SHALLOW    true)
 
 # None of the libraries need to be installed, so turn off installation

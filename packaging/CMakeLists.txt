@@ -1,5 +1,5 @@
 # This file facilitates creation of package files for OS installation
-if(aescrypt_INSTALL)
+if(aescrypt_cli_INSTALL)
     if(LINUX OR APPLE)
         include(InstallRequiredSystemLibraries)
         set(CPACK_PACKAGE_NAME "aescrypt_cli")

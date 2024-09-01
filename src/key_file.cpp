@@ -355,7 +355,7 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
         // if \0, \r, or \n
         for (std::size_t i = 0; i < key.size(); i++)
         {
-            if ((key[i] == '\0') || (key[i] == '\r') ||  (key[i] == '\n'))
+            if ((key[i] == '\0') || (key[i] == '\r') || (key[i] == '\n'))
             {
                 key.resize(i);
                 break;
@@ -393,6 +393,9 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
 
     // Inspect the first octet to determine endianness
     little_endian = (static_cast<std::uint8_t>(key[0]) == 0xFF);
+
+    // Strip off the BOM
+    key.erase(0, 2);
 
     // Convert the UTF-16 key (password) to UTF-8
     key = PasswordConvertUTF8(key, little_endian);

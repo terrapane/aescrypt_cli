@@ -954,24 +954,24 @@ int main(int argc, char *argv[])
 
             // Encrypt files, disabling progress updates as appropriate
             bool encrypt_result = EncryptFiles(logger,
-                                            process_control,
-                                            (quiet || using_stdout),
-                                            password,
-                                            iterations,
-                                            filenames,
-                                            output_file,
-                                            extensions);
+                                               process_control,
+                                               (quiet || using_stdout),
+                                               password,
+                                               iterations,
+                                               filenames,
+                                               output_file,
+                                               extensions);
 
             return (encrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
         }
 
         // Decrypt files, disabling progress updates as appropriate
         auto decrypt_result = DecryptFiles(logger,
-                                        process_control,
-                                        (quiet || using_stdout),
-                                        password,
-                                        filenames,
-                                        output_file);
+                                           process_control,
+                                           (quiet || using_stdout),
+                                           password,
+                                           filenames,
+                                           output_file);
 
         return (decrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
     }

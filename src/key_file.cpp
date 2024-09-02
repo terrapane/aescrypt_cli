@@ -34,6 +34,9 @@
 // It is assumed a character is 8 bits
 static_assert(CHAR_BIT == 8);
 
+namespace
+{
+
 // Character set to use for key files
 static const char Key_Characters[64] =
 {
@@ -46,6 +49,42 @@ static const char Key_Characters[64] =
     'w', 'x', 'y', 'z', '0', '1', '2', '3',
     '4', '5', '6', '7', '8', '9', '_', '+'
 };
+
+/*
+ *  TruncateKeyOnLineEnding()
+ *
+ *  Description:
+ *      Truncate the key at the first observance of \r, \n, or \0.  Key files
+ *      generated using "aescrypt -g" would not have these line endings, but
+ *      if one creates or edits a key file using a text editor, such files
+ *      might have these end-of-line characters and need to be removed, as they
+ *      are not an integral part of the key.
+ *
+ *  Parameters:
+ *      key [in/out]
+ *          This is the key to truncate.  This key must be in UTF-8 form.
+ *
+ *  Returns:
+ *      Nothing.
+ *
+ *  Comments:
+ *      None.
+ */
+void TruncateKeyOnLineEnding(SecureU8String &key)
+{
+    // Iterate over the key, truncating the key at the first observation
+    // if \0, \r, or \n
+    for (std::size_t i = 0; i < key.size(); i++)
+    {
+        if ((key[i] == '\0') || (key[i] == '\r') || (key[i] == '\n'))
+        {
+            key.resize(i);
+            break;
+        }
+    }
+}
+
+} // namespace
 
 /*
  *  GenerateKeyFile()
@@ -351,16 +390,8 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
     if ((static_cast<std::uint8_t>(key[0]) != 0xFE) &&
         (static_cast<std::uint8_t>(key[0]) != 0xFF))
     {
-        // Iterate over the key, truncating the key at the first observation
-        // if \0, \r, or \n
-        for (std::size_t i = 0; i < key.size(); i++)
-        {
-            if ((key[i] == '\0') || (key[i] == '\r') || (key[i] == '\n'))
-            {
-                key.resize(i);
-                break;
-            }
-        }
+        // Truncate the key on line end
+        TruncateKeyOnLineEnding(key);
 
         // Verify that the key if proper UTF-8
         if (!Terra::CharUtil::IsUTF8Valid(
@@ -368,6 +399,14 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
                  key.size()}))
         {
             logger->error << "Key data does not appear to be valid UTF-8"
+                          << std::flush;
+            return {};
+        }
+
+        // Ensure the key is not empty
+        if (key.empty())
+        {
+            logger->error << "The key contents appear to be empty"
                           << std::flush;
             return {};
         }
@@ -400,10 +439,13 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
     // Convert the UTF-16 key (password) to UTF-8
     key = PasswordConvertUTF8(key, little_endian);
 
+    // Truncate the key on line end
+    TruncateKeyOnLineEnding(key);
+
     // Ensure the key is not empty
     if (key.empty())
     {
-        logger->error << "Failed to convert key text to UTF-8" << std::flush;
+        logger->error << "The key contents appear to be empty" << std::flush;
         return {};
     }
 

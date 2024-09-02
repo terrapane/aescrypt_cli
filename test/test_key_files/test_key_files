@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Get the AES Crypt binary
+AESCRYPT="$1"
+
+# Ensure this is not an empty string
+if [ -z "$AESCRYPT" ] ; then
+    echo "First argument should be the AES Crypt binary"
+    exit 1
+fi
+
+# Ensure the executable binary exists (and is executable)
+if [ ! -x "$AESCRYPT" ] ; then
+    echo "AES Crypt executable not found: $AESCRYPT"
+    exit 1
+fi
+
+# Switch directories to where the test process resides
+cd $( dirname "${BASH_SOURCE[0]}" ) || exit 1
+
+# Decrypting files using a key containing only ASCII digits
+"$AESCRYPT" -q -d -k keys/digits_utf8.key \
+            -o /dev/null encrypted/sample_digits_v2.txt.aes 2>/dev/null || {
+    echo Error with UTF-8 digits key decrypting v2 file
+    exit 1
+}
+"$AESCRYPT" -q -d -k keys/digits_utf16le.key \
+            -o /dev/null encrypted/sample_digits_v2.txt.aes 2>/dev/null || {
+    echo Error with UTF-16LE digits key decrypting v2 file
+    exit 1
+}
+
+"$AESCRYPT" -q -d -k keys/digits_utf8.key \
+            -o /dev/null encrypted/sample_digits_v3.txt.aes 2>/dev/null || {
+    echo Error with UTF-8 digits key decrypting v3 file
+    exit 1
+}
+"$AESCRYPT" -q -d -k keys/digits_utf16le.key \
+            -o /dev/null encrypted/sample_digits_v3.txt.aes 2>/dev/null || {
+    echo Error with UTF-16LE digits key decrypting v3 file
+    exit 1
+}
+
+# Decrypt files using a key containing Unicode characters
+"$AESCRYPT" -q -d -k keys/unicode_utf8.key \
+            -o /dev/null encrypted/sample_unicode_v2.txt.aes 2>/dev/null || {
+    echo Error with UTF-8 Unicode key decrypting v2 file
+    exit 1
+}
+"$AESCRYPT" -q -d -k keys/unicode_utf16le.key \
+            -o /dev/null encrypted/sample_unicode_v2.txt.aes 2>/dev/null || {
+    echo Error with UTF-16LE Unicode key decrypting v2 file
+    exit 1
+}
+
+"$AESCRYPT" -q -d -k keys/unicode_utf8.key \
+            -o /dev/null encrypted/sample_unicode_v3.txt.aes 2>/dev/null || {
+    echo Error with UTF-8 Unicode key decrypting v3 file
+    exit 1
+}
+"$AESCRYPT" -q -d -k keys/unicode_utf16le.key \
+            -o /dev/null encrypted/sample_unicode_v3.txt.aes 2>/dev/null || {
+    echo Error with UTF-16LE Unicode key decrypting v3 file
+    exit 1
+}

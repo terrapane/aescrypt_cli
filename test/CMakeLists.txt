@@ -1,1 +1,2 @@
 add_subdirectory(test_file_set)
+add_subdirectory(test_key_files)

@@ -177,7 +177,8 @@ bool GenerateKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
         try
         {
             // Open the file for writing
-            file_stream.open(std::filesystem::path(u8name), std::ios::out);
+            file_stream.open(std::filesystem::path(u8name),
+                             std::ios::out | std::ios::binary);
         }
         catch (const std::filesystem::filesystem_error &e)
         {
@@ -319,7 +320,8 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
         try
         {
             // Open the file for writing
-            file_stream.open(std::filesystem::path(u8name), std::ios::in);
+            file_stream.open(std::filesystem::path(u8name),
+                             std::ios::in | std::ios::binary);
         }
         catch (const std::filesystem::filesystem_error &e)
         {

@@ -45,65 +45,65 @@ if not exist "%AESCRYPT%" (
 cd /D "%~dp0"
 
 @rem Decrypting files using a key containing only ASCII digits
-"%AESCRYPT%" -q -d -k keys/digits_utf8.key \
-             -o NUL encrypted/sample_digits_v2.txt.aes 2>NUL
+"%AESCRYPT%" -q -d -k keys\digits_utf8.key ^
+             -o - encrypted\sample_digits_v2.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-8 digits key decrypting v2 file
     set RESULT=1
     goto :EXIT_RESULT
 )
-"%AESCRYPT%" -q -d -k keys/digits_utf16le.key \
-             -o NUL encrypted/sample_digits_v2.txt.aes 2>NUL
+"%AESCRYPT%" -q -d -k keys\digits_utf16le.key ^
+             -o - encrypted\sample_digits_v2.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-16LE digits key decrypting v2 file
     set RESULT=1
     goto :EXIT_RESULT
 )
 
-"%AESCRYPT%" -q -d -k keys/digits_utf8.key \
-             -o NUL encrypted/sample_digits_v3.txt.aes 2>NUL
+"%AESCRYPT%" -q -d -k keys\digits_utf8.key ^
+             -o - encrypted\sample_digits_v3.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-8 digits key decrypting v3 file
     set RESULT=1
     goto :EXIT_RESULT
 )
-"%AESCRYPT%" -q -d -k keys/digits_utf16le.key \
-             -o NUL encrypted/sample_digits_v3.txt.aes 2>NUL
+"%AESCRYPT%" -q -d -k keys\digits_utf16le.key ^
+             -o - encrypted\sample_digits_v3.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-16LE digits key decrypting v3 file
     set RESULT=1
     goto :EXIT_RESULT
 )
 
-# Decrypt files using a key containing Unicode characters
-"%AESCRYPT%" -q -d -k keys/unicode_utf8.key \
-             -o NUL encrypted/sample_unicode_v2.txt.aes 2>NUL
+@rem Decrypt files using a key containing Unicode characters
+"%AESCRYPT%" -q -d -k keys\unicode_utf8.key ^
+             -o - encrypted\sample_unicode_v2.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-8 Unicode key decrypting v2 file
     set RESULT=1
     goto :EXIT_RESULT
 )
-"%AESCRYPT%" -q -d -k keys/unicode_utf16le.key \
-             -o NUL encrypted/sample_unicode_v2.txt.aes 2>NUL
+"%AESCRYPT%" -q -d -k keys\unicode_utf16le.key ^
+             -o - encrypted\sample_unicode_v2.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-16LE Unicode key decrypting v2 file
     set RESULT=1
-    goto :EXIT_RESULT
+    @rem goto :EXIT_RESULT
 )
 
-"%AESCRYPT%" -q -d -k keys/unicode_utf8.key \
-             -o NUL encrypted/sample_unicode_v3.txt.aes 2>NUL
+"%AESCRYPT%" -q -d -k keys\unicode_utf8.key ^
+             -o - encrypted\sample_unicode_v3.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-8 Unicode key decrypting v3 file
     set RESULT=1
-    goto :EXIT_RESULT
+    @rem goto :EXIT_RESULT
 )
-"%AESCRYPT%" -q -d -k keys/unicode_utf16le.key \
-             -o NUL encrypted/sample_unicode_v3.txt.aes 2>NUL
+"%AESCRYPT%" -q -d -k keys\unicode_utf16le.key ^
+             -o - encrypted\sample_unicode_v3.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-16LE Unicode key decrypting v3 file
     set RESULT=1
-    goto :EXIT_RESULT
+    @rem goto :EXIT_RESULT
 )
 
 :EXIT_RESULT

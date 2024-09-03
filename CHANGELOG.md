@@ -1,5 +1,8 @@
 # Change Log
 
+v4.0.3
+    - Changes to Linux packaging files; no code changes
+
 v4.0.2
     - Corrections for key file handling
 

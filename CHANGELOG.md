@@ -1,5 +1,8 @@
 # Change Log
 
+v4.0.4
+    - Update to latest AES Crypt Engine
+
 v4.0.3
     - Changes to Linux packaging files; no code changes
 

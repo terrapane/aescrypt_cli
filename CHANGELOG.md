@@ -1,5 +1,9 @@
 # Change Log
 
+v4.0.6 (not yet released)
+    - Updated to use latest AES Crypt Engine
+    - Minor code improvements
+
 v4.0.5
     - Updated secutil to 1.0.1 for better Linux compatibility
     - Updated library dependencies to align with updated secutil

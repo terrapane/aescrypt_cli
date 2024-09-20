@@ -28,7 +28,8 @@
  *
  *  Parameters:
  *      password [in]
- *          The string containing characters in UTF-16 format.
+ *          The string containing characters in UTF-16 format.  This must be
+ *          an even number of octets.
  *
  *      little_endian [in]
  *          True if the string's octets are in little endian order or not.
@@ -43,12 +44,17 @@
 SecureU8String PasswordConvertUTF8(std::span<const char8_t> password,
                                    bool little_endian)
 {
+    // Ensure there are an even number of octets in the input string
+    if ((password.size() & 0x01) != 0) return {};
+
     // Prepare a buffer large enough (final length will be determined later)
-    // Initial buffer is password.size() * 1.5
+    // Note: This UTF-8 string needs to be 50% larger than the input string
+    //       in octets.  Since password.size() is a count of 2-octet characters
+    //       as an octet count, then we just add half to the original size.
     SecureU8String u8password(password.size() + (password.size() >> 1), '\0');
 
     // Convert the character string to UTF-8
-    auto [result, length] = Terra::CharUtil::ConvertUTF16ToUTF8(
+    auto [conversion_result, length] = Terra::CharUtil::ConvertUTF16ToUTF8(
         std::span<const std::uint8_t>(
             reinterpret_cast<const std::uint8_t *>(password.data()),
             password.size()),
@@ -58,7 +64,7 @@ SecureU8String PasswordConvertUTF8(std::span<const char8_t> password,
         little_endian);
 
     // Verify the result
-    if (!result || (length == 0)) return {};
+    if (!conversion_result || (length == 0)) return {};
 
     // Adjust the password length
     u8password.resize(length);

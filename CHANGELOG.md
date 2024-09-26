@@ -1,6 +1,6 @@
 # Change Log
 
-v4.0.6 (not yet released)
+v4.0.6
     - Updated to use latest AES Crypt Engine
     - Minor code improvements
 

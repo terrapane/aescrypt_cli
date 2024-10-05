@@ -29,7 +29,7 @@ FetchContent_Declare(conio
 # Fetch the Logger library
 FetchContent_Declare(logger
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/logger.git
-    GIT_TAG        v1.0.0
+    GIT_TAG        v1.0.1
     GIT_SHALLOW    true)
 
 # Fetch the Security Utilities library
@@ -50,14 +50,14 @@ FetchContent_Declare(charutil
     GIT_TAG        v1.0.0
     GIT_SHALLOW    true)
 
-# None of the libraries need to be installed, so turn off installation
-set(aescrypt_engine_INSTALL OFF)
-set(program_options_INSTALL OFF)
-set(conio_INSTALL OFF)
-set(logger_INSTALL OFF)
-set(secutil_INSTALL OFF)
-set(random_INSTALL OFF)
-set(charutil_INSTALL OFF)
+# None of the libraries need to be installed, so do so only if requested
+set(aescrypt_engine_INSTALL ${aescrypt_cli_DEPENDENCIES_INSTALL})
+set(program_options_INSTALL ${aescrypt_cli_DEPENDENCIES_INSTALL})
+set(conio_INSTALL ${aescrypt_cli_DEPENDENCIES_INSTALL})
+set(logger_INSTALL ${aescrypt_cli_DEPENDENCIES_INSTALL})
+set(secutil_INSTALL ${aescrypt_cli_DEPENDENCIES_INSTALL})
+set(random_INSTALL ${aescrypt_cli_DEPENDENCIES_INSTALL})
+set(charutil_INSTALL ${aescrypt_cli_DEPENDENCIES_INSTALL})
 
 # Make dependencies available
 FetchContent_MakeAvailable(

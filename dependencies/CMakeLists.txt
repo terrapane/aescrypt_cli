@@ -11,7 +11,7 @@ endif()
 # Fetch the AES Crypt Engine
 FetchContent_Declare(aescrypt_engine
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/aescrypt_engine.git
-    GIT_TAG        v4.0.3
+    GIT_TAG        v4.0.4
     GIT_SHALLOW    true)
 
 # Fetch the Program Options library
@@ -47,7 +47,7 @@ FetchContent_Declare(random
 # Fetch the character utilities library
 FetchContent_Declare(charutil
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/charutil.git
-    GIT_TAG        v1.0.0
+    GIT_TAG        v1.0.1
     GIT_SHALLOW    true)
 
 # None of the libraries need to be installed, so do so only if requested

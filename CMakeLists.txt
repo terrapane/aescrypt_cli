@@ -29,7 +29,7 @@ option(aescrypt_cli_INSTALL "Install the AES Crypt CLI Program" ON)
 # Option to control ability to install dependencies
 option(aescrypt_cli_DEPENDENCIES_INSTALL "Install dependencies" OFF)
 
-# If building statically, this setting must trickle down to all dependencies
+# Ensure static or dynamic build selection trickles down to all dependencies
 if(aescrypt_cli_MSVC_STATIC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 else()

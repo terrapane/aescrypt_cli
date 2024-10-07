@@ -30,10 +30,12 @@ option(aescrypt_cli_INSTALL "Install the AES Crypt CLI Program" ON)
 option(aescrypt_cli_DEPENDENCIES_INSTALL "Install dependencies" OFF)
 
 # Ensure static or dynamic build selection trickles down to all dependencies
-if(aescrypt_cli_MSVC_STATIC)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-else()
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL>")
+if(MSVC)
+    if(aescrypt_cli_MSVC_STATIC)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    else()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL>")
+    endif()
 endif()
 
 # Determine whether clang-tidy will be performed

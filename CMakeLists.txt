@@ -32,6 +32,8 @@ option(aescrypt_cli_DEPENDENCIES_INSTALL "Install dependencies" OFF)
 # If building statically, this setting must trickle down to all dependencies
 if(aescrypt_cli_MSVC_STATIC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+else()
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL>")
 endif()
 
 # Determine whether clang-tidy will be performed

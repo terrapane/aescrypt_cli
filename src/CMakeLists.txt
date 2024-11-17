@@ -60,10 +60,11 @@ target_link_libraries(aescrypt
         Terra::charutil
         Threads::Threads)
 
-# For MSVC, this is required to support file globbing (wildcards)
+# For MSVC, this is required to support file globbing (wildcards) and ensure
+# that code is built to use Unicode
 if(MSVC)
     target_link_options(aescrypt PRIVATE setargv.obj)
-    target_compile_definitions(aescrypt PRIVATE UNICODE)
+    target_compile_definitions(aescrypt PRIVATE UNICODE _UNICODE)
 endif()
 
 # Install the executable and man page, as appropriate

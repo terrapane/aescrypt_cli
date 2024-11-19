@@ -1,6 +1,6 @@
 # Change Log
 
-v4.0.8
+v4.1.0
 
 - Changed packaging logic for Mac
 - Build ensures both Windows Runtime and C libraries are built to use Unicode

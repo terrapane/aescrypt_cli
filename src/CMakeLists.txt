@@ -52,6 +52,7 @@ target_compile_options(aescrypt
 target_link_libraries(aescrypt
     PRIVATE
         Terra::aescrypt_engine
+        Terra::aescrypt_lm
         Terra::program_options
         Terra::conio
         Terra::logger

@@ -1,5 +1,9 @@
 # Change Log
 
+v4.1.1
+
+- Updated dependencies
+
 v4.1.0
 
 - Changed packaging logic for Mac

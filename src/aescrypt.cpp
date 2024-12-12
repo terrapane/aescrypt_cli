@@ -40,7 +40,9 @@
 #include <terra/secutil/secure_erase.h>
 #include <terra/charutil/character_utilities.h>
 #include <terra/conio/ansi_capable.h>
+#ifdef AESCRYPT_ENABLE_LICENSE_MODULE
 #include <terra/aescrypt_lm/aescrypt_lm.h>
+#endif
 #include "aescrypt.h"
 #include "version.h"
 #include "mode.h"
@@ -206,7 +208,11 @@ void InstallSignalHandlers()
  */
 void Version()
 {
-    std::u8string licensee = Terra::ACLM::GetLicensee();
+#ifdef AESCRYPT_ENABLE_LICENSE_MODULE
+    const std::u8string licensee = Terra::ACLM::GetLicensee();
+#else
+    const std::u8string licensee = u8"Enterprise Build";
+#endif
     std::cout << Project_Name << " " << Project_Version << std::endl;
     std::cout << Copyright_Text << std::endl;
     std::cout << Author_Text << std::endl;
@@ -950,6 +956,7 @@ int main(int argc, char *argv[])
         password = std::move(user_password);
     }
 
+#ifdef AESCRYPT_ENABLE_LICENSE_MODULE
     // Verify user license rights
     if (!Terra::ACLM::ValidateACLM())
     {
@@ -959,6 +966,7 @@ int main(int argc, char *argv[])
                   << "visiting https://www.aescrypt.com/." << std::endl;
         return EXIT_FAILURE;
     }
+#endif
 
     // Install signal handlers to ensure proper cleanup if user aborts
     InstallSignalHandlers();

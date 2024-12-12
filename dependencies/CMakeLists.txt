@@ -14,11 +14,13 @@ FetchContent_Declare(aescrypt_engine
     GIT_TAG        v4.0.4
     GIT_SHALLOW    true)
 
-# Fetch the AES Crypt Licensing Module
-FetchContent_Declare(aescrypt_lm
-    GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/aescrypt_lm.git
-    GIT_TAG        v1.0.1
-    GIT_SHALLOW    true)
+# Fetch the AES Crypt Licensing Module for consumer builds
+if(aescrypt_ENABLE_LICENSE_MODULE)
+    FetchContent_Declare(aescrypt_lm
+        GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/aescrypt_lm.git
+        GIT_TAG        v1.0.1
+        GIT_SHALLOW    true)
+endif()
 
 # Fetch the Program Options library
 FetchContent_Declare(program_options
@@ -69,10 +71,14 @@ set(charutil_INSTALL ${aescrypt_cli_DEPENDENCIES_INSTALL})
 # Make dependencies available
 FetchContent_MakeAvailable(
     aescrypt_engine
-    aescrypt_lm
     program_options
     conio
     logger
     secutil
     random
     charutil)
+
+# Fetch the licensing module for consumer builds
+if(aescrypt_ENABLE_LICENSE_MODULE)
+    FetchContent_MakeAvailable(aescrypt_lm)
+endif()

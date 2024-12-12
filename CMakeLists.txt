@@ -29,6 +29,12 @@ option(aescrypt_cli_INSTALL "Install the AES Crypt CLI Program" ON)
 # Option to control ability to install dependencies
 option(aescrypt_cli_DEPENDENCIES_INSTALL "Install dependencies" OFF)
 
+# Determine whether clang-tidy will be performed
+option(aescrypt_cli_CLANG_TIDY "Use clang-tidy to perform linting during build" OFF)
+
+# Option to control use of the license module (intended for enterprise use)
+option(aescrypt_ENABLE_LICENSE_MODULE "Enable license module (disable for private enterprise builds)" ON)
+
 # Ensure static or dynamic build selection trickles down to all dependencies
 if(MSVC)
     if(aescrypt_cli_MSVC_STATIC)
@@ -37,9 +43,6 @@ if(MSVC)
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
     endif()
 endif()
-
-# Determine whether clang-tidy will be performed
-option(aescrypt_cli_CLANG_TIDY "Use clang-tidy to perform linting during build" OFF)
 
 add_subdirectory(dependencies)
 add_subdirectory(src)

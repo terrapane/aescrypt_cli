@@ -17,11 +17,11 @@ important to understand that a debug build is far too slow for production use.
 
 ### Linux / Mac
 
-To build a release build on Linux or Mac, change directories to the root of the
-source directory and issue these commands:
+To create an enterprise release build on Linux or Mac, change directories to the
+root of the source directory and issue these commands:
 
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -Daescrypt_ENABLE_LICENSE_MODULE:BOOL=OFF
 cmake --build build --parallel
 ```
 

@@ -1,5 +1,9 @@
 # Change Log
 
+v4.1.2
+
+- Added build option for enterprise builds that disable license checks
+
 v4.1.1
 
 - Updated dependencies

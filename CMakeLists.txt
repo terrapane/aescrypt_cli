@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 # Define the AES Crypt CLI project
 project(aescrypt_cli
-        VERSION 4.1.1.0
+        VERSION 4.1.2.0
         DESCRIPTION "AES Crypt Command-Line (CLI) Program"
         LANGUAGES CXX
         HOMEPAGE_URL "https://www.aescrypt.com")
@@ -42,6 +42,12 @@ if(MSVC)
     else()
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
     endif()
+endif()
+
+# Set the target deployment version to macOS 10.15; this minimum version will
+# be updated in the future when newer system dependencies become desired
+if(APPLE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
 endif()
 
 add_subdirectory(dependencies)

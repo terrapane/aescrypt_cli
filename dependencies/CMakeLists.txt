@@ -18,7 +18,7 @@ FetchContent_Declare(aescrypt_engine
 if(aescrypt_ENABLE_LICENSE_MODULE)
     FetchContent_Declare(aescrypt_lm
         GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/aescrypt_lm.git
-        GIT_TAG        v1.0.1
+        GIT_TAG        v1.0.2
         GIT_SHALLOW    true)
 endif()
 

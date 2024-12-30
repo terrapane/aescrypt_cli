@@ -2,7 +2,7 @@
 
 v4.1.2
 
-- Added build option for enterprise builds that disable license checks
+- Added build option for enterprise builds that disables license checks
 
 v4.1.1
 

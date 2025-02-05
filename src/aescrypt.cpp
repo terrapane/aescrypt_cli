@@ -1,7 +1,7 @@
 /*
  *  aescrypt.cpp
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2025
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -9,7 +9,8 @@
  *      Paul E. Jones <paulej@packetizer.com>
  *
  *  Description:
- *      This is the main implementation file for the AES Crypt CLI program.
+ *      This is the main implementation file for the AES Crypt command-line
+ *      program.
  *
  *  Portability Issues:
  *      None.
@@ -61,8 +62,6 @@ namespace
 {
 
 ProcessControl process_control;
-
-} // namespace
 
 /*
  *  SignalHandler()
@@ -213,9 +212,12 @@ void Version()
 #else
     const std::u8string licensee = u8"Enterprise Build";
 #endif
-    std::cout << Project_Name << " " << Project_Version << std::endl;
-    std::cout << Copyright_Text << std::endl;
-    std::cout << Author_Text << std::endl;
+    std::cout << Terra::Project_Name << " " << Terra::Project_Version
+              << std::endl
+              << Terra::Copyright_Text
+              << std::endl
+              << Terra::Author_Text
+              << std::endl;
     std::cout << "Licensee: ";
     if (licensee.empty())
     {
@@ -508,6 +510,8 @@ std::pair<bool, bool> ParseOptions(Terra::ProgramOptions::Parser &parser,
     return {true, true};
 }
 
+} // namespace
+
 /*
  *  main()
  *
@@ -574,13 +578,12 @@ int main(int argc, char *argv[])
         const std::string encoding = nl_langinfo(CODESET);
         if ((encoding != "UTF-8"))
         {
-            std::string indent = "         ";
             std::cerr << "Warning: Your locale is set to '"
                       << encoding
-                      << "', but 'UTF-8' is recommended. Do not"
+                      << "', but 'UTF-8' required for Unicode.  Thus, do not"
                       << std::endl
-                      << indent
-                      << "use passwords or filenames with non-ASCII characters."
+                      << "         "
+                      << "use passwords with non-ASCII characters."
                       << std::endl;
         }
     }
@@ -979,7 +982,10 @@ int main(int argc, char *argv[])
             // Create extensions vector to be inserted into stream header
             const std::vector<std::pair<std::string, std::string>> extensions =
             {
-                {"CREATED_BY", Project_Name + " " + Project_Version}
+                {
+                    "CREATED_BY",
+                    Terra::Project_Name + " " + Terra::Project_Version
+                }
             };
 
             // Encrypt files, disabling progress updates as appropriate

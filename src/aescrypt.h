@@ -1,7 +1,7 @@
 /*
  *  aescrypt.h
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2025
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -10,7 +10,7 @@
  *
  *  Description:
  *      This header file defines some common types and values used by various
- *      functions that make up the AES Crypt CLI utility.
+ *      functions that make up the AES Crypt command-line program.
  *
  *  Portability Issues:
  *      None.

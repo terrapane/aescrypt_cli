@@ -1,7 +1,7 @@
 /*
  *  version.h
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2025
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -19,7 +19,12 @@
 
 #include <string>
 
+namespace Terra
+{
+
 static const std::string Project_Name = "@PROJECT_NAME@";
 static const std::string Project_Version = "@PROJECT_VERSION@";
 static const std::string Copyright_Text = "@COPYRIGHT_TEXT@";
 static const std::string Author_Text = "@AUTHOR_TEXT@";
+
+} // namespace Terra

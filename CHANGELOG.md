@@ -1,5 +1,9 @@
 # Change Log
 
+v4.2.0
+
+- Updated dependencies (aescrypt_engine, secutil, aescrypt_lm)
+
 v4.1.2
 
 - Added build option for enterprise builds that disables license checks

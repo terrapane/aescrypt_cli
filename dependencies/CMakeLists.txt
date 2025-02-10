@@ -11,51 +11,51 @@ endif()
 # Fetch the AES Crypt Engine
 FetchContent_Declare(aescrypt_engine
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/aescrypt_engine.git
-    GIT_TAG        v4.0.5
+    GIT_TAG        v4.0.6
     GIT_SHALLOW    true)
 
 # Fetch the AES Crypt Licensing Module for consumer builds
 if(aescrypt_ENABLE_LICENSE_MODULE)
     FetchContent_Declare(aescrypt_lm
         GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/aescrypt_lm.git
-        GIT_TAG        v1.0.3
+        GIT_TAG        v1.0.4
         GIT_SHALLOW    true)
 endif()
 
 # Fetch the Program Options library
 FetchContent_Declare(program_options
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/program_options.git
-    GIT_TAG        v1.0.0
+    GIT_TAG        v1.0.1
     GIT_SHALLOW    true)
 
 # Fetch the Console I/O library
 FetchContent_Declare(conio
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/conio.git
-    GIT_TAG        v1.0.0
+    GIT_TAG        v1.0.1
     GIT_SHALLOW    true)
 
 # Fetch the Logger library
 FetchContent_Declare(logger
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/logger.git
-    GIT_TAG        v1.0.1
+    GIT_TAG        v1.0.2
     GIT_SHALLOW    true)
 
 # Fetch the Security Utilities library
 FetchContent_Declare(secutil
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/secutil.git
-    GIT_TAG        v1.0.2
+    GIT_TAG        v1.0.3
     GIT_SHALLOW    true)
 
 # Fetch the Random Number Generator library
 FetchContent_Declare(random
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/random.git
-    GIT_TAG        v1.0.0
+    GIT_TAG        v1.0.1
     GIT_SHALLOW    true)
 
 # Fetch the character utilities library
 FetchContent_Declare(charutil
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/charutil.git
-    GIT_TAG        v1.0.1
+    GIT_TAG        v1.0.2
     GIT_SHALLOW    true)
 
 # None of the libraries need to be installed, so do so only if requested

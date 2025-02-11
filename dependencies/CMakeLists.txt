@@ -11,7 +11,7 @@ endif()
 # Fetch the AES Crypt Engine
 FetchContent_Declare(aescrypt_engine
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/aescrypt_engine.git
-    GIT_TAG        v4.0.6
+    GIT_TAG        v4.0.7
     GIT_SHALLOW    true)
 
 # Fetch the AES Crypt Licensing Module for consumer builds

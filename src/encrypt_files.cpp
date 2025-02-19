@@ -276,6 +276,59 @@ bool EncryptFiles(
 
             try
             {
+                // Get the input file status
+                std::filesystem::file_status file_status =
+                    std::filesystem::status(std::filesystem::path(u8name));
+
+                // If the input file does not exist, report an error
+                if (!std::filesystem::exists(file_status))
+                {
+                    Terra::SecUtil::SecureString error_text;
+                    error_text = "Input file does not exist: " + in_file;
+                    logger->error << error_text << std::flush;
+                    std::cerr << error_text << std::endl;
+                    return false;
+                }
+
+                // The specified input file must be a regular file
+                if (!std::filesystem::is_regular_file(file_status))
+                {
+                    Terra::SecUtil::SecureString error_text;
+                    error_text = "Input name is not a file: " + in_file;
+                    logger->error << error_text << std::flush;
+                    std::cerr << error_text << std::endl;
+                    return false;
+                }
+            }
+            catch (const std::filesystem::filesystem_error &e)
+            {
+                Terra::SecUtil::SecureString error_text;
+                error_text = "Error checking input file: " + in_file +
+                             " (file system err=" + e.what() + ")";
+                logger->error << error_text << std::flush;
+                std::cerr << error_text << std::endl;
+                return false;
+            }
+            catch (const std::exception &e)
+            {
+                Terra::SecUtil::SecureString error_text;
+                error_text = "Error checking input file: " + in_file +
+                             " (err=" + e.what() + ")";
+                logger->error << error_text << std::flush;
+                std::cerr << error_text << std::endl;
+                return false;
+            }
+            catch (...)
+            {
+                Terra::SecUtil::SecureString error_text;
+                error_text = "Error checking input file: " + in_file;
+                logger->error << error_text << std::flush;
+                std::cerr << error_text << std::endl;
+                return false;
+            }
+
+            try
+            {
                 // Attempt to get the file size
                 file_size =
                     std::filesystem::file_size(std::filesystem::path(u8name));
@@ -363,6 +416,14 @@ bool EncryptFiles(
                 // Get the file status
                 std::filesystem::file_status file_status =
                     std::filesystem::status(std::filesystem::path(u8name));
+
+                // Is the output name a directory?
+                if (std::filesystem::is_directory(file_status))
+                {
+                    std::cerr << "Target output cannot be a directory: "
+                              << out_file << std::endl;
+                    return false;
+                }
 
                 // If the output file does not exist, attempt to remove later
                 // (Do not remove by default so as to not attempt to remove

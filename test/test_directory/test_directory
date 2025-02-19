@@ -1,0 +1,79 @@
+#!/bin/bash
+#
+# This test will attempt to encrypt a filename that is a directory, which
+# should fail since AES Crypt requires real filenames.
+#
+
+# Get the AES Crypt binary
+AESCRYPT="$1"
+
+# Ensure this is not an empty string
+if [ -z "$AESCRYPT" ] ; then
+    echo "First argument should be the AES Crypt binary"
+    exit 1
+fi
+
+# Ensure the executable binary exists (and is executable)
+if [ ! -x "$AESCRYPT" ] ; then
+    echo "AES Crypt executable not found: $AESCRYPT"
+    exit 1
+fi
+
+# Switch directories to where the test process resides
+cd $( dirname "${BASH_SOURCE[0]}" ) || exit 1
+
+# Attempt to encrypt a directory (this should fail)
+result_text=$("$AESCRYPT" -q -e -p secret -o /dev/null /etc 2>&1)
+exit_code=$?
+
+if [ $exit_code -eq 0 ] ; then
+    echo "Attempt to encrypt a directory should have failed"
+    exit 1
+fi
+
+if [[ "$result_text" != "Input name is not a file: /etc" ]] ; then
+    echo "Unexpected output: $result_text"
+    exit 1
+fi
+
+# Attempt to encrypt a file writing into a directory (this should fail)
+result_text=$("$AESCRYPT" -q -e -p secret -o /tmp /etc/passwd 2>&1)
+exit_code=$?
+
+if [ $exit_code -eq 0 ] ; then
+    echo "Attempt to encrypt output to a directory should have failed"
+    exit 1
+fi
+
+if [[ "$result_text" != "Target output cannot be a directory: /tmp" ]] ; then
+    echo "Unexpected output: $result_text"
+    exit 1
+fi
+
+# Attempt to decrypt a directory (this should fail)
+result_text=$("$AESCRYPT" -q -d -p secret -o /dev/null /etc 2>&1)
+exit_code=$?
+
+if [ $exit_code -eq 0 ] ; then
+    echo "Attempt to encrypt a directory should have failed"
+    exit 1
+fi
+
+if [[ "$result_text" != "Input name is not a file: /etc" ]] ; then
+    echo "Unexpected output: $result_text"
+    exit 1
+fi
+
+# Attempt to decrypt a file writing into a directory (this should fail)
+result_text=$("$AESCRYPT" -q -d -p secret -o /tmp /etc/passwd 2>&1)
+exit_code=$?
+
+if [ $exit_code -eq 0 ] ; then
+    echo "Attempt to decrypt output to a directory should have failed"
+    exit 1
+fi
+
+if [[ "$result_text" != "Target output cannot be a directory: /tmp" ]] ; then
+    echo "Unexpected output: $result_text"
+    exit 1
+fi

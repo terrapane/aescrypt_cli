@@ -1,7 +1,8 @@
 #!/bin/bash
 #
-# This test will attempt to encrypt a filename that is a directory, which
-# should fail since AES Crypt requires real filenames.
+# This test will attempt to encrypt and decrypt files to a directory or
+# directories themselves.  All tests should fail with specific errors,
+# as sources and destinations must be files, not directories.
 #
 
 # Get the AES Crypt binary

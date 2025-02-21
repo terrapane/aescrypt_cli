@@ -8,6 +8,14 @@
 # Get the AES Crypt binary
 AESCRYPT="$1"
 
+# See if the current locale uses UTF-8 for encoding
+lc_type_enc=$(locale | grep ^LC_CTYPE | sed 's/.*="//' | sed 's/".*//' | \
+              sed 's/.*\.//' | tr '[a-z]' '[A-Z]')
+if [ "$lc_type_enc" != "UTF-8" ] ; then
+    # Current locale doesn't use UTF-8, so try forcing C.utf8
+    export LANG=C.utf8
+fi
+
 # Ensure this is not an empty string
 if [ -z "$AESCRYPT" ] ; then
     echo "First argument should be the AES Crypt binary"

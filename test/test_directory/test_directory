@@ -12,8 +12,8 @@ AESCRYPT="$1"
 lc_type_enc=$(locale | grep ^LC_CTYPE | sed 's/.*="//' | sed 's/".*//' | \
               sed 's/.*\.//' | tr '[a-z]' '[A-Z]')
 if [ "$lc_type_enc" != "UTF-8" ] ; then
-    # Current locale doesn't use UTF-8, so try forcing C.utf8
-    export LANG=C.utf8
+    # Current locale doesn't use UTF-8, so try forcing C.UTF-8
+    export LANG=C.UTF-8
 fi
 
 # Ensure this is not an empty string

@@ -2,6 +2,7 @@
 
 v4.2.1 (in progress)
 
+- Fixed a bug where a directory name could be specified instead of a file name
 - Updated all library dependencies
 
 v4.2.0

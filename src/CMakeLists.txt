@@ -12,15 +12,12 @@ add_executable(aescrypt
     password_prompt.cpp
     encrypt_files.cpp
     decrypt_files.cpp
-    password_convert.cpp  ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+    password_convert.cpp)
 
 # Include version.rc (version data) and aescrypt.rc (application icon)
 if(WIN32)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc @ONLY)
-    target_sources(aescrypt
-        PRIVATE
-            aescrypt.rc
-            ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+    target_sources(aescrypt PRIVATE aescrypt.rc)
 endif()
 
 # Declare the include directories

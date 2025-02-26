@@ -16,7 +16,7 @@ add_executable(aescrypt
 
 # Include version.rc (version data) and aescrypt.rc (application icon)
 if(WIN32)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc @ONLY)
+    configure_file(version.rc.in version.rc @ONLY)
     target_sources(aescrypt PRIVATE aescrypt.rc)
 endif()
 

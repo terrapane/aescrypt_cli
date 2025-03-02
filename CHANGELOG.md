@@ -1,5 +1,9 @@
 # Change Log
 
+v4.2.3 (in progress)
+
+- Updated dependencies
+
 v4.2.2
 
 - Fixed a bug where a directory name could be specified instead of a file name

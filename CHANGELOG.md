@@ -1,8 +1,9 @@
 # Change Log
 
-v4.2.3 (in progress)
+v4.2.3
 
-- Updated dependencies
+- Introduced versioning information into Windows builds
+- Updated library dependencies
 
 v4.2.2
 
@@ -15,7 +16,7 @@ v4.2.1
 
 v4.2.0
 
-- Updated dependencies (aescrypt_engine, secutil, aescrypt_lm)
+- Updated dependencies (aescrypt\_engine, security utilities, aescrypt\_lm)
 
 v4.1.2
 
@@ -43,8 +44,8 @@ v4.0.6
 
 v4.0.5
 
-- Updated secutil to 1.0.1 for better Linux compatibility
-- Updated library dependencies to align with updated secutil
+- Updated library dependencies to align with updated security utilities library
+- Updated security utilities library to 1.0.1 for better Linux compatibility
 
 v4.0.4
 

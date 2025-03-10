@@ -35,8 +35,12 @@ option(aescrypt_cli_CLANG_TIDY "Use clang-tidy to perform linting during build" 
 # Option to control use of the license module (intended for enterprise use)
 option(aescrypt_ENABLE_LICENSE_MODULE "Enable license module (disable for private enterprise builds)" ON)
 
-# Ensure static or dynamic build selection trickles down to all dependencies
+# Set MSVC-specific settings
 if(MSVC)
+    # Enable parallel builds
+    add_compile_options(/MP)
+
+    # Ensure static or dynamic build selection trickles down to all dependencies
     if(aescrypt_cli_MSVC_STATIC)
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     else()

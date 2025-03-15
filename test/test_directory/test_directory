@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This test will attempt to encrypt and decrypt files to a directory or
 # directories themselves.  All tests should fail with specific errors,

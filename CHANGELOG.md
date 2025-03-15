@@ -1,5 +1,9 @@
 # Change Log
 
+v4.2.4
+
+- Initial build for FreeBSD
+
 v4.2.3
 
 - Introduced versioning information into Windows builds

@@ -15,10 +15,10 @@ necessary to fully build.
 One can build either a debug or release version of the software, but it is
 important to understand that a debug build is far too slow for production use.
 
-### Linux / Mac
+### Linux/Unix or Mac
 
-To create an enterprise release build on Linux or Mac, change directories to the
-root of the source directory and issue these commands:
+To create an enterprise release build on Linux/Unix or Mac, change directories
+to the root of the source directory and issue these commands:
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -Daescrypt_ENABLE_LICENSE_MODULE:BOOL=OFF

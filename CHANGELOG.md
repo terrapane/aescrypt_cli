@@ -1,5 +1,9 @@
 # Change Log
 
+v4.2.5 (in progress)
+
+- Updated various library dependencies
+
 v4.2.4
 
 - Initial build for FreeBSD

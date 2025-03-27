@@ -2,6 +2,7 @@
 
 v4.2.5 (in progress)
 
+- Report I/O errors reading key files more robustly
 - Updated various library dependencies
 
 v4.2.4

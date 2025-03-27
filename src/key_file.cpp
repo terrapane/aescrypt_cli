@@ -365,7 +365,7 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
         stream.get(octet);
 
         // Check for errors
-        if (!stream.good() && !stream.eof())
+        if (stream.bad() || (!stream.good() && !stream.eof()))
         {
             LogSystemError(logger,
                            std::string("Failed reading input file \"") +

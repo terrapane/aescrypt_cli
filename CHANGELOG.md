@@ -1,5 +1,9 @@
 # Change Log
 
+v4.2.6 (in progress)
+
+- Updated library dependencies
+
 v4.2.5
 
 - Report I/O errors reading key files more robustly

@@ -36,8 +36,8 @@ set_target_properties(aescrypt
 # Use the following compile options
 target_compile_options(aescrypt
     PRIVATE
-        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>: -Wpedantic -Wextra -Wall>
-        $<$<CXX_COMPILER_ID:MSVC>: >)
+        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:-Wpedantic -Wextra -Wall>
+        $<$<CXX_COMPILER_ID:MSVC>:>)
 
 # Link against library dependencies
 target_link_libraries(aescrypt

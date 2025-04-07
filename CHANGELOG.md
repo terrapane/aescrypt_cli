@@ -1,8 +1,9 @@
 # Change Log
 
-v4.2.6 (in progress)
+v4.2.6
 
 - Updated library dependencies
+- Revised integration test
 
 v4.2.5
 

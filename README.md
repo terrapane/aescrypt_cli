@@ -25,6 +25,10 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -Daescrypt_ENABLE_LICENSE_MODULE:
 cmake --build build --parallel
 ```
 
+Note that while it is possible to build the software from source code,
+a license is required to use AES Crypt.  Refer to the AES Crypt site
+[here](https://www.aescrypt.com/license.html).
+
 If you want to install the `aescrypt` binary and the man page, do this:
 
 ```bash

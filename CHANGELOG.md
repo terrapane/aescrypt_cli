@@ -1,5 +1,10 @@
 # Change Log
 
+v4.3.0
+
+- Performance improvements via improvements to libaes
+- Updated library dependencies
+
 v4.2.6
 
 - Updated library dependencies

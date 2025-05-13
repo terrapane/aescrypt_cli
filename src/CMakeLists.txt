@@ -58,33 +58,27 @@ if(WIN32)
     if(HAVE_STRERROR_S)
         target_compile_definitions(aescrypt PRIVATE HAVE_STRERROR_S)
     endif()
-endif()
-
-# Check that the Unix-like systems have the POSIX version of strerror_r()
-if(LINUX OR APPLE OR BSD)
+else()
+    # Check to see if the system has strerror_r()
     include(CheckSymbolExists)
-    set(CMAKE_REQUIRED_DEFINITIONS -D_POSIX_C_SOURCE=200809L)
     check_symbol_exists(strerror_r "string.h" HAVE_STRERROR_R)
-    unset(CMAKE_REQUIRED_DEFINITIONS)
 
+    # Verify that it's the POSIX version, not the GNU version
     if(HAVE_STRERROR_R)
-    include(CheckCSourceCompiles)
-    set(CMAKE_REQUIRED_DEFINITIONS -D_POSIX_C_SOURCE=200809L)
-    check_c_source_compiles("
-        #include <string.h>
-        int main()
-        {
-            char buffer[256];
-            int result = strerror_r(0, buffer, sizeof(buffer));
-            return result;
-        }
-    " HAVE_POSIX_STRERROR_R)
-    unset(CMAKE_REQUIRED_DEFINITIONS)
-    endif()
+        include(CheckCXXSourceCompiles)
+        check_cxx_source_compiles("
+            #include <cstring>
+            int main()
+            {
+                char buffer[256];
+                int result = ::strerror_r(0, buffer, sizeof(buffer));
+                return result;
+            }
+        " HAVE_POSIX_STRERROR_R)
 
-    if(HAVE_POSIX_STRERROR_R)
-        target_compile_definitions(aescrypt PRIVATE HAVE_STRERROR_R)
-        target_compile_definitions(aescrypt PRIVATE POSIX_C_SOURCE=200809L)
+        if(HAVE_POSIX_STRERROR_R)
+            target_compile_definitions(aescrypt PRIVATE HAVE_STRERROR_R)
+        endif()
     endif()
 endif()
 

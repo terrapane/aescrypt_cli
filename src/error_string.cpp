@@ -48,9 +48,9 @@ std::string GetErrorString(int error)
 
     // Retrieve the error string
 #ifdef HAVE_STRERROR_R
-    auto result = strerror_r(error, buffer.data(), buffer.size());
+    int result = ::strerror_r(error, buffer.data(), buffer.size());
 #else
-    auto result = strerror_s(buffer.data(), buffer.size(), error);
+    int result = ::strerror_s(buffer.data(), buffer.size(), error);
 #endif
 
     // Ensure the error message was retrieved
@@ -58,7 +58,7 @@ std::string GetErrorString(int error)
 
     return std::string(buffer.data());
 #else
-    return strerror(error);
+    return ::strerror(error);
 #endif
 }
 

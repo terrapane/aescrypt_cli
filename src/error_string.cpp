@@ -50,7 +50,7 @@ std::string GetErrorString(int error)
 #ifdef HAVE_POSIX_STRERROR_R
     int result = ::strerror_r(error, buffer.data(), buffer.size());
 #else
-    int result = ::strerror_s(buffer.data(), buffer.size(), error);
+    errno_t result = ::strerror_s(buffer.data(), buffer.size(), error);
 #endif
 
     // Ensure the error message was retrieved

@@ -297,8 +297,8 @@ bool DecryptFiles(
             catch (const std::exception &e)
             {
                 logger->error << "Exception trying to determine if filename "
-                                 "has .aes extension"
-                              << std::flush;
+                                 "has .aes extension: "
+                              << e.what() << std::flush;
                 std::cerr << "Exception trying to determine if filename has "
                              ".aes extension"
                           << std::endl;

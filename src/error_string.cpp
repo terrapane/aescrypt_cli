@@ -16,6 +16,9 @@
  *      None.
  */
 
+#if defined(HAVE_STRERROR_R) || defined(HAVE_STRERROR_S)
+#include <array>
+#endif
 #include <string>
 #include <cstring>
 #include <terra/logger/logger.h>
@@ -40,7 +43,23 @@
  */
 std::string GetErrorString(int error)
 {
+#if defined(HAVE_STRERROR_R) || defined(HAVE_STRERROR_S)
+    std::array<char, 256> buffer{};
+
+    // Retrieve the error string
+#ifdef HAVE_STRERROR_R
+    auto result = strerror_r(error, buffer.data(), buffer.size());
+#else
+    auto result = strerror_s(buffer.data(), buffer.size(), error);
+#endif
+
+    // Ensure the error message was retrieved
+    if (result != 0) return "Error: <message is unavailable>";
+
+    return std::string(buffer.data());
+#else
     return strerror(error);
+#endif
 }
 
 /*

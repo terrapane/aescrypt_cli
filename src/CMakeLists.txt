@@ -36,8 +36,8 @@ set_target_properties(aescrypt
 # Use the following compile options
 target_compile_options(aescrypt
     PRIVATE
-        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:-Wpedantic -Wextra -Wall>
-        $<$<CXX_COMPILER_ID:MSVC>:>)
+        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:-Wpedantic -Wextra -Wall -Werror>
+        $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>)
 
 # Link against library dependencies
 target_link_libraries(aescrypt
@@ -50,6 +50,43 @@ target_link_libraries(aescrypt
         Terra::random
         Terra::charutil
         Threads::Threads)
+
+# Check that Windows has strerror_s()
+if(WIN32)
+    include(CheckFunctionExists)
+    check_function_exists(strerror_s HAVE_STRERROR_S)
+    if(HAVE_STRERROR_S)
+        target_compile_definitions(aescrypt PRIVATE HAVE_STRERROR_S)
+    endif()
+endif()
+
+# Check that the Unix-like systems have the POSIX version of strerror_r()
+if(LINUX OR APPLE OR BSD)
+    include(CheckSymbolExists)
+    set(CMAKE_REQUIRED_DEFINITIONS -D_POSIX_C_SOURCE=200809L)
+    check_symbol_exists(strerror_r "string.h" HAVE_STRERROR_R)
+    unset(CMAKE_REQUIRED_DEFINITIONS)
+
+    if(HAVE_STRERROR_R)
+    include(CheckCSourceCompiles)
+    set(CMAKE_REQUIRED_DEFINITIONS -D_POSIX_C_SOURCE=200809L)
+    check_c_source_compiles("
+        #include <string.h>
+        int main()
+        {
+            char buffer[256];
+            int result = strerror_r(0, buffer, sizeof(buffer));
+            return result;
+        }
+    " HAVE_POSIX_STRERROR_R)
+    unset(CMAKE_REQUIRED_DEFINITIONS)
+    endif()
+
+    if(HAVE_POSIX_STRERROR_R)
+        target_compile_definitions(aescrypt PRIVATE HAVE_STRERROR_R)
+        target_compile_definitions(aescrypt PRIVATE POSIX_C_SOURCE=200809L)
+    endif()
+endif()
 
 # Check to see if the licensing module is disabled; this is to allow
 # enterprise customers to build AES Crypt without license checks

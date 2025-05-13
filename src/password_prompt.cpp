@@ -108,7 +108,7 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
     // Write a message to the console
     WriteConsoleA(console_out_handle,
                   prompt.c_str(),
-                  prompt.size(),
+                  static_cast<DWORD>(prompt.size()),
                   NULL,
                   NULL);
 
@@ -424,26 +424,26 @@ std::pair<PasswordResult, SecureU8String> GetUserPassword(
     logger->info << "Preparing to prompt for the password" << std::flush;
 
     // Prompt user for the password
-    auto [result, user_input] = ReadTerminalText(logger, "Enter password: ");
+    auto [result_password, user_input] = ReadTerminalText(logger, "Enter password: ");
 
     // Return early on error
-    if (result != PasswordResult::Success)
+    if (result_password != PasswordResult::Success)
     {
         logger->error << "Unable to get password" << std::flush;
-        return {result, {}};
+        return {result_password, {}};
     }
 
     // Verify the input?
     if (verify_input)
     {
         // Prompt user for the password again
-        auto [result, again] = ReadTerminalText(logger, "Re-enter password: ");
+        auto [result_verify, again] = ReadTerminalText(logger, "Re-enter password: ");
 
         // Return early on error
-        if (result != PasswordResult::Success)
+        if (result_verify != PasswordResult::Success)
         {
             logger->error << "Unable to get password: " << std::flush;
-            return {result, {}};
+            return {result_verify, {}};
         }
 
         // Verify the passwords match

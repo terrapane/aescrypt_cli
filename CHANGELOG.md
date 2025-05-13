@@ -4,6 +4,8 @@ v4.3.0
 
 - Performance improvements via improvements to libaes
 - Updated library dependencies
+- Made compiler warnings stricter
+- Addressed compiler warnings
 
 v4.2.6
 

@@ -43,11 +43,11 @@
  */
 std::string GetErrorString(int error)
 {
-#if defined(HAVE_STRERROR_R) || defined(HAVE_POSIX_STRERROR_S)
+#if defined(HAVE_POSIX_STRERROR_R) || defined(HAVE_STRERROR_S)
     std::array<char, 256> buffer{};
 
     // Retrieve the error string
-#ifdef HAVE_STRERROR_R
+#ifdef HAVE_POSIX_STRERROR_R
     int result = ::strerror_r(error, buffer.data(), buffer.size());
 #else
     int result = ::strerror_s(buffer.data(), buffer.size(), error);

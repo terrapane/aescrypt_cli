@@ -51,35 +51,16 @@ target_link_libraries(aescrypt
         Terra::charutil
         Threads::Threads)
 
-# Check that Windows has strerror_s()
-if(WIN32)
-    include(CheckFunctionExists)
-    check_function_exists(strerror_s HAVE_STRERROR_S)
-    if(HAVE_STRERROR_S)
-        target_compile_definitions(aescrypt PRIVATE HAVE_STRERROR_S)
-    endif()
-else()
-    # Check to see if the system has strerror_r()
-    include(CheckSymbolExists)
-    check_symbol_exists(strerror_r "string.h" HAVE_STRERROR_R)
 
-    # Verify that it's the POSIX version, not the GNU version
-    if(HAVE_STRERROR_R)
-        include(CheckCXXSourceCompiles)
-        check_cxx_source_compiles("
-            #include <cstring>
-            int main()
-            {
-                char buffer[256];
-                int result = ::strerror_r(0, buffer, sizeof(buffer));
-                return result;
-            }
-        " HAVE_POSIX_STRERROR_R)
+# Include string error function checks
+include(${CMAKE_SOURCE_DIR}/cmake/string_error.cmake)
 
-        if(HAVE_POSIX_STRERROR_R)
-            target_compile_definitions(aescrypt PRIVATE HAVE_STRERROR_R)
-        endif()
-    endif()
+if(HAVE_STRERROR_S)
+    target_compile_definitions(aescrypt PRIVATE HAVE_STRERROR_S)
+endif()
+
+if(HAVE_POSIX_STRERROR_R)
+    target_compile_definitions(aescrypt PRIVATE HAVE_POSIX_STRERROR_R)
 endif()
 
 # Check to see if the licensing module is disabled; this is to allow

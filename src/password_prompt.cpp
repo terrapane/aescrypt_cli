@@ -38,6 +38,82 @@ namespace
 #ifdef _WIN32
 
 /*
+ *  IsWindowsTerminal()
+ *
+ *  Description:
+ *      This function will check to see if the program is executing inside
+ *      Windows Terminal.
+ *
+ *  Parameters:
+ *      None.
+ *
+ *  Returns:
+ *      True if executing inside Windows Terminal, false if not.
+ *
+ *  Comments:
+ *      None.
+ */
+bool IsWindowsTerminal()
+{
+    char *buffer{};
+
+    // Attempt to get the WT_SESSION environment variable
+    if (_dupenv_s(&buffer, nullptr, "WT_SESSION")) return false;
+
+    // If the environment variable is not set, return false
+    if (buffer == nullptr) return false;
+
+    free(buffer);
+
+    return true;
+}
+
+/*
+ *  IsWindows11OrNewer()
+ *
+ *  Description:
+ *      This function will check to see if the system is Windows 11 or newer.
+ *
+ *  Parameters:
+ *      None.
+ *
+ *  Returns:
+ *      True if the system is running Windows 11 or newer. In the event of an
+ *      error, false is returned.
+ *
+ *  Comments:
+ *      None.
+ */
+bool IsWindows11OrNewer()
+{
+    constexpr DWORD Windows11Major = 10;
+    constexpr DWORD Windows11Build = 22000;
+
+    typedef NTSTATUS (WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+
+    // Dynamically load RtlGetVersion from ntdll.dll
+    HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+
+    // Assume < 11 if there is a failure
+    if (!ntdll) return false;
+
+    RtlGetVersionPtr RtlGetVersion = reinterpret_cast<RtlGetVersionPtr>(
+        GetProcAddress(ntdll, "RtlGetVersion"));
+
+    // Assume < 11 if there is a failure
+    if (!RtlGetVersion) return false;
+
+    RTL_OSVERSIONINFOW versionInfo = { sizeof(versionInfo) };
+    NTSTATUS status = RtlGetVersion(&versionInfo);
+    if (status != 0) return false;
+
+    // Check for Windows 11 (major 10, build >= 22000) or newer (major > 10)
+    return (versionInfo.dwMajorVersion > Windows11Major ||
+            (versionInfo.dwMajorVersion == Windows11Major &&
+             versionInfo.dwBuildNumber >= Windows11Build));
+}
+
+/*
  *  ReadTerminalText()
  *
  *  Description:
@@ -131,9 +207,8 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
         // would have been discarded by the next line having read it previously)
         if (*c_w == L'\n')
         {
-            // For legacy Windows console, we need to emit a CRLF; if this
-            // string is NULL, then it is not running inside Windows Terminal
-            if (getenv("WT_SESSION") == NULL)
+            // For legacy Windows console, we need to emit a CRLF
+            if (!IsWindowsTerminal() && !IsWindows11OrNewer())
             {
                 WriteConsoleW(console_out_handle, L"\r\n", 2, NULL, NULL);
             }
@@ -424,7 +499,8 @@ std::pair<PasswordResult, SecureU8String> GetUserPassword(
     logger->info << "Preparing to prompt for the password" << std::flush;
 
     // Prompt user for the password
-    auto [result_password, user_input] = ReadTerminalText(logger, "Enter password: ");
+    auto [result_password, user_input] =
+        ReadTerminalText(logger, "Enter password: ");
 
     // Return early on error
     if (result_password != PasswordResult::Success)
@@ -437,7 +513,8 @@ std::pair<PasswordResult, SecureU8String> GetUserPassword(
     if (verify_input)
     {
         // Prompt user for the password again
-        auto [result_verify, again] = ReadTerminalText(logger, "Re-enter password: ");
+        auto [result_verify, again] =
+            ReadTerminalText(logger, "Re-enter password: ");
 
         // Return early on error
         if (result_verify != PasswordResult::Success)

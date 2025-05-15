@@ -51,7 +51,6 @@ target_link_libraries(aescrypt
         Terra::charutil
         Threads::Threads)
 
-
 # Include string error function checks
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/string_error.cmake)
 

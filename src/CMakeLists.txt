@@ -53,7 +53,7 @@ target_link_libraries(aescrypt
 
 
 # Include string error function checks
-include(${CMAKE_SOURCE_DIR}/cmake/string_error.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/string_error.cmake)
 
 if(HAVE_STRERROR_S)
     target_compile_definitions(aescrypt PRIVATE HAVE_STRERROR_S)

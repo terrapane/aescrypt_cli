@@ -207,26 +207,25 @@ void InstallSignalHandlers()
  */
 void Version()
 {
+    const std::u8string trial = u8"Unlicensed (License Required)";
+    std::u8string licensee;
+
 #ifdef AESCRYPT_ENABLE_LICENSE_MODULE
-    const std::u8string licensee = Terra::ACLM::GetLicensee();
-#else
-    const std::u8string licensee = u8"Enterprise Build";
+    licensee = Terra::ACLM::GetLicensee();
 #endif
+
+    // If no licensee was determined, it must be unlicensed
+    if (licensee.empty()) licensee = trial;
+
     std::cout << Terra::Project_Name << " " << Terra::Project_Version
               << std::endl
               << Terra::Copyright_Text
               << std::endl
               << Terra::Author_Text
               << std::endl;
+
     std::cout << "Licensee: ";
-    if (licensee.empty())
-    {
-        std::cout << "Unlicensed";
-    }
-    else
-    {
-        std::cout << std::string(licensee.begin(), licensee.end());
-    }
+    std::cout << std::string(licensee.begin(), licensee.end());
     std::cout << std::endl;
 }
 

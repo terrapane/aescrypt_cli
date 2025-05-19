@@ -6,7 +6,7 @@ v4.3.0
 - Updated library dependencies
 - Made compiler warnings stricter
 - Addressed compiler warnings
-- Conditionally use strerror(), strerror_s(), or strerror_r()
+- Conditionally use strerror(), strerror\_s(), or strerror\_r()
 
 v4.2.6
 

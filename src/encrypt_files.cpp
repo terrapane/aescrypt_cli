@@ -20,7 +20,7 @@
 #include <fstream>
 #include <thread>
 #include <mutex>
-#include <cstdint>
+#include <cstddef>
 #include <terra/aescrypt/engine/encryptor.h>
 #include "encrypt_files.h"
 #include "error_string.h"
@@ -77,7 +77,7 @@ namespace
  *      None.
  */
 bool EncryptStream(
-    const Terra::Logger::LoggerPointer &logger,
+    Terra::Logger::LoggerPointer logger,
     ProcessControl &process_control,
     bool quiet,
     const SecureU8String &password,
@@ -119,7 +119,7 @@ bool EncryptStream(
     };
 
     // Create an AES Crypt Engine Encryptor object
-    Encryptor encryptor(logger);
+    Encryptor encryptor(std::move(logger));
 
     // Encrypt the stream via a separate thread
     std::thread encrypt_thread(
@@ -235,7 +235,7 @@ bool EncryptStream(
  *      None.
  */
 bool EncryptFiles(
-    const Terra::Logger::LoggerPointer &parent_logger,
+    Terra::Logger::LoggerPointer parent_logger,
     ProcessControl &process_control,
     const bool quiet,
     const SecureU8String &password,
@@ -253,7 +253,8 @@ bool EncryptFiles(
 
     // Create a child logger
     Terra::Logger::LoggerPointer logger =
-        std::make_shared<Terra::Logger::Logger>(parent_logger, "FILE");
+        std::make_shared<Terra::Logger::Logger>(std::move(parent_logger),
+                                                "FILE");
 
     logger->info << "Encryption process starting" << std::flush;
 

@@ -20,6 +20,8 @@
 #include <fstream>
 #include <thread>
 #include <mutex>
+#include <utility>
+#include <cstddef>
 #include <terra/aescrypt/engine/decryptor.h>
 #include "decrypt_files.h"
 #include "error_string.h"
@@ -114,7 +116,7 @@ bool HasAESExtension(const SecureString &filename)
  *      None.
  */
 bool DecryptStream(
-    const Terra::Logger::LoggerPointer &logger,
+    Terra::Logger::LoggerPointer logger,
     ProcessControl &process_control,
     bool quiet,
     const SecureU8String &password,
@@ -154,7 +156,7 @@ bool DecryptStream(
     };
 
     // Create an AES Crypt Engine Decryptor object
-    Decryptor decryptor(logger);
+    Decryptor decryptor(std::move(logger));
 
     // Decrypt the stream via a separate thread
     std::thread decrypt_thread(
@@ -259,7 +261,7 @@ bool DecryptStream(
  *      None.
  */
 bool DecryptFiles(
-    const Terra::Logger::LoggerPointer &parent_logger,
+    Terra::Logger::LoggerPointer parent_logger,
     ProcessControl &process_control,
     const bool quiet,
     const SecureU8String &password,
@@ -275,7 +277,8 @@ bool DecryptFiles(
 
     // Create a child logger
     Terra::Logger::LoggerPointer logger =
-        std::make_shared<Terra::Logger::Logger>(parent_logger, "FILE");
+        std::make_shared<Terra::Logger::Logger>(std::move(parent_logger),
+                                                "FILE");
 
     // If an output file is not specified, ensure all filenames end in .aes
     if (output_file.empty())

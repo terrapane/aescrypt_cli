@@ -489,12 +489,13 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
  *      None.
  */
 std::pair<PasswordResult, SecureU8String> GetUserPassword(
-                            const Terra::Logger::LoggerPointer &parent_logger,
+                            Terra::Logger::LoggerPointer parent_logger,
                             bool verify_input)
 {
     // Create a child logger
     Terra::Logger::LoggerPointer logger =
-        std::make_shared<Terra::Logger::Logger>(parent_logger, "PMPT");
+        std::make_shared<Terra::Logger::Logger>(std::move(parent_logger),
+                                                "PMPT");
 
     logger->info << "Preparing to prompt for the password" << std::flush;
 

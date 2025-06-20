@@ -1,7 +1,7 @@
 /*
  *  key_file.h
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2024, 2025
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -47,7 +47,7 @@
  *  Comments:
  *      None.
  */
-bool GenerateKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
+bool GenerateKeyFile(Terra::Logger::LoggerPointer parent_logger,
                      const SecureString &key_file,
                      std::size_t key_size);
 
@@ -72,5 +72,5 @@ bool GenerateKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
  *  Comments:
  *      None.
  */
-SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
+SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
                            const SecureString &key_file);

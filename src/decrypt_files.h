@@ -64,7 +64,7 @@
  *  Comments:
  *      None.
  */
-bool DecryptFiles(const Terra::Logger::LoggerPointer &parent_logger,
+bool DecryptFiles(Terra::Logger::LoggerPointer parent_logger,
                   ProcessControl &process_control,
                   const bool quiet,
                   const SecureU8String &password,

@@ -75,7 +75,7 @@
  *      None.
  */
 bool EncryptFiles(
-    const Terra::Logger::LoggerPointer &parent_logger,
+    Terra::Logger::LoggerPointer parent_logger,
     ProcessControl &process_control,
     const bool quiet,
     const SecureU8String &password,

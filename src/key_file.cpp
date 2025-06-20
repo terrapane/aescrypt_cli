@@ -1,7 +1,7 @@
 /*
  *  key_file.cpp
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2024, 2025
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <span>
 #include <string>
+#include <utility>
 #include <terra/random/random_generator.h>
 #include <terra/charutil/character_utilities.h>
 #include "key_file.h"
@@ -115,7 +116,7 @@ void TruncateKeyOnLineEnding(SecureU8String &key)
  *      are strongly recommended.  As an aside, older versions of AES Crypt
  *      used UTF-16LE for password files.
  */
-bool GenerateKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
+bool GenerateKeyFile(Terra::Logger::LoggerPointer parent_logger,
                      const SecureString &key_file,
                      std::size_t key_size)
 {
@@ -125,7 +126,8 @@ bool GenerateKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
 
     // Create a child logger
     Terra::Logger::LoggerPointer logger =
-        std::make_shared<Terra::Logger::Logger>(parent_logger, "KGEN");
+        std::make_shared<Terra::Logger::Logger>(std::move(parent_logger),
+                                                "KGEN");
 
     logger->info << "Preparing to generate key file" << std::flush;
 
@@ -296,7 +298,7 @@ bool GenerateKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
  *  Comments:
  *      None.
  */
-SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
+SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
                            const SecureString &key_file)
 {
     SecureU8String key;
@@ -306,7 +308,8 @@ SecureU8String ReadKeyFile(const Terra::Logger::LoggerPointer &parent_logger,
 
     // Create a child logger
     Terra::Logger::LoggerPointer logger =
-        std::make_shared<Terra::Logger::Logger>(parent_logger, "KFLE");
+        std::make_shared<Terra::Logger::Logger>(std::move(parent_logger),
+                                                "KFLE");
 
     logger->info << "Preparing to read key file" << std::flush;
 

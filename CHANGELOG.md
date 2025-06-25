@@ -1,5 +1,11 @@
 # Change Log
 
+v4.3.1
+
+- Minor C++ code improvements
+- Updated library dependencies that include changes to facilitate building
+  on OpenBSD and other Unix-like platforms
+
 v4.3.0
 
 - Performance improvements via improvements to libaes

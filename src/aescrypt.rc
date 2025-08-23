@@ -1,7 +1,7 @@
 #include <winver.h>
 #include "version.rc"
 
-IDI_AESCRYPT ICON "aescrypt.ico"
+IDI_AESCRYPT_LOCK ICON "aescrypt_lock.ico"
 
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION VER_FILEVERSION

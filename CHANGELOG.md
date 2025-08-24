@@ -1,5 +1,9 @@
 # Change Log
 
+v4.4.0 (In Progress)
+
+- Updated lock icon for Windows to use compression
+
 v4.3.1
 
 - Minor C++ code improvements

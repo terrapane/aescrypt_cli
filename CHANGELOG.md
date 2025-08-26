@@ -2,7 +2,8 @@
 
 v4.4.0 (In Progress)
 
-- Updated lock icon for Windows to use compression
+- Updated lock icon for Windows to use compression and to add padding
+  consistent with other platforms
 
 v4.3.1
 

@@ -72,9 +72,9 @@ if(aescrypt_ENABLE_LICENSE_MODULE)
     target_compile_definitions(aescrypt PRIVATE AESCRYPT_ENABLE_LICENSE_MODULE)
 endif()
 
-# For MSVC, this is required to support file globbing (wildcards) and ensure
+# For Windows, this is required to support file globbing (wildcards) and ensure
 # that code is built to use Unicode
-if(MSVC)
+if(WIN32)
     target_link_options(aescrypt PRIVATE setargv.obj)
     target_compile_definitions(aescrypt PRIVATE UNICODE _UNICODE)
 endif()

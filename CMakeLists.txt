@@ -36,17 +36,7 @@ option(aescrypt_cli_CLANG_TIDY "Use clang-tidy to perform linting during build" 
 option(aescrypt_ENABLE_LICENSE_MODULE "Enable license module (disable for private enterprise builds)" ON)
 
 # Set MSVC-specific settings
-if(MSVC)
-    # Enable parallel builds
-    add_compile_options(/MP)
-
-    # Ensure static or dynamic build selection trickles down to all dependencies
-    if(aescrypt_cli_MSVC_STATIC)
-        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-    else()
-        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-    endif()
-endif()
+include(cmake/msvc_options.cmake)
 
 # Set the target deployment version to macOS 10.15; this minimum version will
 # be updated in the future when newer system dependencies become desired

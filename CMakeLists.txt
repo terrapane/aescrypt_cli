@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 # Define the AES Crypt CLI project
 project(aescrypt_cli
-        VERSION 4.3.1.0
+        VERSION 4.4.0.0
         DESCRIPTION "AES Crypt Command-Line (CLI) Program"
         LANGUAGES CXX
         HOMEPAGE_URL "https://www.aescrypt.com")
@@ -54,6 +54,9 @@ if(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
 endif()
 
+# Ensure testing is enabled to surface tests in dependencies
+include(CTest)
+
 add_subdirectory(dependencies)
 add_subdirectory(src)
 
@@ -61,8 +64,6 @@ add_subdirectory(src)
 if(PROJECT_IS_TOP_LEVEL)
     add_subdirectory(packaging)
 endif()
-
-include(CTest)
 
 if(BUILD_TESTING AND aescrypt_cli_BUILD_TESTS)
     add_subdirectory(test)

@@ -1,9 +1,11 @@
 # Change Log
 
-v4.4.0 (In Progress)
+v4.4.0
 
 - Updated lock icon for Windows to use compression and to add padding
   consistent with other platforms
+- Updated dependencies
+- CMake changes to facilitate downstream unit testing
 
 v4.3.1
 

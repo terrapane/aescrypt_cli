@@ -1,24 +1,24 @@
 # AES Crypt Command-Line Program
 
 This project contains the AES Crypt Command Line (CLI) program.  This software
-allows one to encrypt and decrypt files from the Linux, Windows, or Mac
+allows one to encrypt and decrypt files from the Windows, Mac, or Linux/Unix,
 terminal command line, cron jobs, etc.
 
 ## Building the AES Crypt CLI Program
 
 AES Crypt is intended to be built using CMake, which is a popular tool for
-specifying how to compile C and C++ software.  It can (and does) automatically
-import a number of dependencies (including the AES Crypt Engine library, console
-I/O library, security utilities, random number library, etc.), which are
-necessary to fully build.
+specifying how to compile C and C++ software.  It automatically imports
+dependencies (including the AES Crypt Engine library, console I/O library,
+security utilities, random number library, etc.), which are necessary to fully
+build the software.
 
 One can build either a debug or release version of the software, but it is
-important to understand that a debug build is far too slow for production use.
+important to mention that a debug build is far too slow for production use.
 
 ### Linux/Unix or Mac
 
-To create an enterprise release build on Linux/Unix or Mac, change directories
-to the root of the source directory and issue these commands:
+To create a release build on Linux/Unix or Mac, change directories to the root
+of the source directory and issue these commands:
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE:STRING=Release -Daescrypt_ENABLE_LICENSE_MODULE:BOOL=OFF
@@ -41,11 +41,25 @@ commands.
 
 ### Windows
 
-While you can build from the command-line with similar instructions as
-shown above, Microsoft Visual Studio and Visual Studio Code make it much
-easier to build.  You can just open the project folder and the integrated
-CMake tools make is very easy.  Just select the compiler to use
-(e.g., MSVC 64-bit)  and the `Release` build.
+Microsoft Visual Studio and Visual Studio Code make it much easier to build.
+You can just open the project folder and the integrated CMake tools make is
+very easy.  Just select the compiler to use (e.g., MSVC 64-bit)  and the
+`Release` build.
+
+If you want to build it from the command-line using MSVC as the compiler, the
+commands would be:
+
+```bash
+cmake -S . -B build -Daescrypt_ENABLE_LICENSE_MODULE:BOOL=OFF
+cmake --build build --config Release --parallel
+```
+
+If you use Ninja as the generator, then you can build it like Linux/Unix:
+
+```bash
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE:STRING=Release -Daescrypt_ENABLE_LICENSE_MODULE:BOOL=OFF
+cmake --build build --parallel
+```
 
 ## Usage
 

@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.21)
 project(aescrypt_cli
         VERSION 4.4.0.0
         DESCRIPTION "AES Crypt Command-Line (CLI) Program"
-        LANGUAGES CXX
-        HOMEPAGE_URL "https://www.aescrypt.com")
+        HOMEPAGE_URL "https://www.aescrypt.com"
+        LANGUAGES CXX)
 
 set(COPYRIGHT_TEXT "Copyright (C) 2025")
 set(AUTHOR_TEXT    "Terrapane Corporation")

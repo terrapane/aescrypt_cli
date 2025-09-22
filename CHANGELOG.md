@@ -2,6 +2,7 @@
 
 v4.4.0.1 (in progress)
 
+- Revised Windows resource files to automate version and copyright information
 - Changed CMake files
 - Updated dependencies
 
@@ -23,7 +24,7 @@ v4.3.0
 - Updated library dependencies
 - Made compiler warnings stricter
 - Addressed compiler warnings
-- Conditionally use strerror(), strerror\_s(), or strerror\_r()
+- Conditionally use `strerror()`, `strerror_s()`, or `strerror_r()`
 
 v4.2.6
 

@@ -24,7 +24,7 @@ BEGIN
             VALUE "CompanyName", "Terrapane Corporation"
             VALUE "FileDescription", "AES Crypt Command Line Tool"
             VALUE "FileVersion", VER_FILEVERSION_STR
-            VALUE "InternalName", "aescrypt.exe"
+            VALUE "InternalName", "aescrypt"
             VALUE "LegalCopyright", "Copyright (C) 2025"
             VALUE "OriginalFilename", "aescrypt.exe"
             VALUE "ProductName", "AES Crypt"

@@ -1,5 +1,10 @@
 # Change Log
 
+v4.4.0.1 (in progress)
+
+- Changed CMake files
+- Updated dependencies
+
 v4.4.0
 
 - Updated lock icon for Windows to add padding consistent with other platforms

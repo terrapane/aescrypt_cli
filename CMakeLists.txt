@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 # Define the AES Crypt CLI project
 project(aescrypt_cli
-        VERSION 4.4.0.0
+        VERSION 4.4.0.1
         DESCRIPTION "AES Crypt Command-Line (CLI) Program"
         HOMEPAGE_URL "https://www.aescrypt.com"
         LANGUAGES CXX)

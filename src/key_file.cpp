@@ -395,13 +395,11 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
     if ((static_cast<std::uint8_t>(key[0]) != 0xFE) &&
         (static_cast<std::uint8_t>(key[0]) != 0xFF))
     {
-        // Truncate the key on line end
+        // Truncate the key on line ending
         TruncateKeyOnLineEnding(key);
 
         // Verify that the key if proper UTF-8
-        if (!Terra::CharUtil::IsUTF8Valid(
-                {reinterpret_cast<const std::uint8_t *>(key.data()),
-                 key.size()}))
+        if (!Terra::CharUtil::IsUTF8Valid(key))
         {
             logger->error << "Key data does not appear to be valid UTF-8"
                           << std::flush;

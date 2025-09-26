@@ -230,6 +230,7 @@ void Version()
 }
 
 #ifdef _WIN32
+
 /*
  *  ConvertArguments()
  *
@@ -253,51 +254,42 @@ void Version()
 SecureVector<SecureString> ConvertArguments(const int argc,
                                             const wchar_t *const argv[])
 {
+    // Ensure Windows is using two octet wchar_t values
+    static_assert(sizeof(wchar_t) == 2,
+                  "wchar_t should be two octets in size on Windows");
+
     SecureVector<SecureString> arguments;
 
     for (std::size_t i = 0; i < argc; i++)
     {
-        // How many characters are in the string?
-        auto length = wcslen(argv[i]);
+        // How many octets are in the string?
+        auto arg_length = wcslen(argv[i]) * sizeof(wchar_t);
 
         // If the length is zero, just push an empty string onto the vector
-        if (length == 0)
+        if (arg_length == 0)
         {
             arguments.emplace_back(Terra::SecUtil::SecureString());
             continue;
         }
 
-        // Compute space required to convert UTF-16LE to UTF-8
-        std::size_t octets = WideCharToMultiByte(CP_UTF8,
-                                                 0,
-                                                 argv[i],
-                                                 static_cast<int>(length),
-                                                 nullptr,
-                                                 0,
-                                                 nullptr,
-                                                 nullptr);
+        // Create a string to hold the UTF-8 octets
+        SecureString argument(arg_length + (arg_length >> 1), '\0');
+
+        // Perform the UTF-16LE to UTF-8 conversion
+        auto [result, length] = Terra::CharUtil::ConvertUTF16ToUTF8(
+            std::span<const std::uint8_t>{
+                reinterpret_cast<const std::uint8_t *>(argv[i]),
+                arg_length},
+            argument);
 
         // A zero indicates an error
-        if (octets == 0)
+        if (result == false)
         {
             throw std::runtime_error("Failed to convert command arguments");
         }
 
-        // Allocate string with space for converted argument
-        SecureString argument(octets, '\0');
-
-        // Convert the argument to UTF-8, ensuring length is as expected
-        if (WideCharToMultiByte(CP_UTF8,
-                                0,
-                                argv[i],
-                                static_cast<int>(length),
-                                argument.data(),
-                                static_cast<int>(argument.size()),
-                                nullptr,
-                                nullptr) != octets)
-        {
-            throw std::runtime_error("Error converting command arguments");
-        };
+        // Reduce the string size to match the length
+        argument.resize(length);
 
         // Put the string on the arguments vector
         arguments.emplace_back(argument);
@@ -305,6 +297,7 @@ SecureVector<SecureString> ConvertArguments(const int argc,
 
     return arguments;
 }
+
 #endif
 
 /*
@@ -596,7 +589,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        // Ensure at least one file was specified
+        // Get a count of the number of input files specified
         file_count = options_parser.GetOptionCount("");
 
         // Get the list of filenames and store in a secure container
@@ -709,9 +702,7 @@ int main(int argc, char *argv[])
             }
 
             // Verify the string is valid UTF-8
-            bool valid_encoding = Terra::CharUtil::IsUTF8Valid(
-                {reinterpret_cast<const std::uint8_t *>(user_password.data()),
-                 user_password.size()});
+            bool valid_encoding = Terra::CharUtil::IsUTF8Valid(user_password);
 
             // If the encoding is invalid, do not proceed
             if (!valid_encoding)
@@ -721,9 +712,7 @@ int main(int argc, char *argv[])
             }
 
             // Copy the user-provided password into a UTF-8 string type
-            std::copy(user_password.begin(),
-                      user_password.end(),
-                      std::back_inserter(password));
+            std::ranges::copy(user_password, std::back_inserter(password));
         }
 
         // The key file to use with encryption / decryption / key generation

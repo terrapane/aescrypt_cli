@@ -1,7 +1,7 @@
 /*
  *  password_convert.h
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2024, 2025
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -33,6 +33,8 @@
  *
  *      little_endian [in]
  *          True if the string's octets are in little endian order or not.
+ *          This defaults to true, sime most modern computers utilize
+ *          little endian (including all Windows machines).
  *
  *  Returns:
  *      The UTF-8-encoded string.  If there is an error, an empty string will
@@ -42,4 +44,4 @@
  *      None.
  */
 SecureU8String PasswordConvertUTF8(std::span<const char8_t> password,
-                                   bool little_endian);
+                                   bool little_endian = true);

@@ -1,7 +1,7 @@
 /*
  *  password_prompt.cpp
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2024, 2025
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -144,15 +144,18 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
                                     const Terra::Logger::LoggerPointer &logger,
                                     const std::string &prompt)
 {
+    static_assert(sizeof(wchar_t) == 2,
+                  "This function assumes wchar_t is two octets");
+
     PasswordResult password_result = PasswordResult::Success;
     SecureU8String password;
-    SecureU8String c(2,' ');
+    SecureVector<wchar_t> input_buffer(1);
     DWORD read_count;
     DWORD mode;
     DWORD mode_changed{};
 
     // Make a pointer to simplify referencing the characters read
-    wchar_t *c_w = reinterpret_cast<wchar_t *>(c.data());
+    wchar_t *c_w = input_buffer.data();
 
     // Get the handle for reading input
     HANDLE console_in_handle = GetStdHandle(STD_INPUT_HANDLE);
@@ -240,7 +243,7 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
     }
 
     // Convert the UTF-16LE to UTF-8
-    password = PasswordConvertUTF8(password, true);
+    password = PasswordConvertUTF8(password);
 
     // If the string is empty, that's an error
     if (password.empty())

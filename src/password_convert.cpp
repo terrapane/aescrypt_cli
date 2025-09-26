@@ -1,7 +1,7 @@
 /*
  *  password_convert.cpp
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2024, 2025
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -33,6 +33,8 @@
  *
  *      little_endian [in]
  *          True if the string's octets are in little endian order or not.
+ *          This defaults to true, sime most modern computers utilize
+ *          little endian (including all Windows machines).
  *
  *  Returns:
  *      The UTF-8-encoded string.  If there is an error, an empty string will
@@ -54,17 +56,12 @@ SecureU8String PasswordConvertUTF8(std::span<const char8_t> password,
     SecureU8String u8password(password.size() + (password.size() >> 1), '\0');
 
     // Convert the character string to UTF-8
-    auto [conversion_result, length] = Terra::CharUtil::ConvertUTF16ToUTF8(
-        std::span<const std::uint8_t>(
-            reinterpret_cast<const std::uint8_t *>(password.data()),
-            password.size()),
-        std::span<std::uint8_t>(
-            reinterpret_cast<std::uint8_t *>(u8password.data()),
-            u8password.size()),
-        little_endian);
+    auto [result, length] = Terra::CharUtil::ConvertUTF16ToUTF8(password,
+                                                                u8password,
+                                                                little_endian);
 
     // Verify the result
-    if (!conversion_result || (length == 0)) return {};
+    if (!result || (length == 0)) return {};
 
     // Adjust the password length
     u8password.resize(length);

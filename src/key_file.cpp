@@ -304,7 +304,6 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
     SecureU8String key;
     std::ifstream file_stream;
     bool using_stdin = true;
-    bool little_endian = true;
 
     // Create a child logger
     Terra::Logger::LoggerPointer logger =
@@ -392,8 +391,8 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
 
     // If the key does not start with byte-order-mark (BOM) value 0xFF or 0xFE,
     // it is assumed to be UTF-8
-    if ((static_cast<std::uint8_t>(key[0]) != 0xFE) &&
-        (static_cast<std::uint8_t>(key[0]) != 0xFF))
+    if ((key.size() < 2) || ((key[0] != 0xFE || key[1] != 0xFF) &&
+                             (key[0] != 0xFF || key[1] != 0xFE)))
     {
         // Truncate the key on line ending
         TruncateKeyOnLineEnding(key);
@@ -427,6 +426,7 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
     }
 
     // The key length must be >= 4 since the BOM occupies the first 2 octets
+    // and one character requires 2 additional octets
     if (key.length() < 4)
     {
         logger->error << "Key file data appears to be too short" << std::flush;
@@ -434,7 +434,7 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
     }
 
     // Inspect the first octet to determine endianness
-    little_endian = (static_cast<std::uint8_t>(key[0]) == 0xFF);
+    bool little_endian = (static_cast<std::uint8_t>(key[0]) == 0xFF);
 
     // Strip off the BOM
     key.erase(0, 2);

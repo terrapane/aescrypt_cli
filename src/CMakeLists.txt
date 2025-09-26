@@ -26,7 +26,7 @@ endif()
 # Declare the include directories
 target_include_directories(aescrypt
     PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
 
 # Specify the C++ standard to observe

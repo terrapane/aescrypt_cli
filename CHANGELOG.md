@@ -3,6 +3,7 @@
 v4.5.0.0 (in progress)
 
 - Revised Windows resource files to automate version and copyright information
+- Added a "force" option to allow force overwriting output files
 - Revisions to align with changes in dependencies
 - Changed CMake files
 - Updated dependencies

@@ -43,6 +43,9 @@
  *          decryption is in progress, it will gracefully terminate
  *          decryption and allow the program to exit.
  *
+ *      force [in]
+ *          If true, the output file will be overwritten if it exists.
+ *
  *      quiet [in]
  *          If true, the program will not emit messages to the terminal, except
  *          for error messages (which are directed to stderr).
@@ -66,6 +69,7 @@
  */
 bool DecryptFiles(Terra::Logger::LoggerPointer parent_logger,
                   ProcessControl &process_control,
+                  const bool force,
                   const bool quiet,
                   const SecureU8String &password,
                   const std::vector<SecureString> &filenames,

@@ -205,6 +205,9 @@ bool EncryptStream(
  *          encryption is in progress, it will gracefully terminate
  *          encryption and allow the program to exit.
  *
+ *      force [in]
+ *          If true, the output file will be overwritten if it exists.
+ *
  *      quiet [in]
  *          If true, the program will not emit messages to the terminal, except
  *          for error messages (which are directed to stderr).
@@ -237,6 +240,7 @@ bool EncryptStream(
 bool EncryptFiles(
     Terra::Logger::LoggerPointer parent_logger,
     ProcessControl &process_control,
+    const bool force,
     const bool quiet,
     const SecureU8String &password,
     const std::uint32_t iterations,
@@ -429,13 +433,13 @@ bool EncryptFiles(
                 // If the output file does not exist, attempt to remove later
                 // (Do not remove by default so as to not attempt to remove
                 // things like character special devices.)
-                if (!std::filesystem::exists(file_status))
+                if (!std::filesystem::exists(file_status) || force)
                 {
                     remove_on_fail = true;
                 }
 
                 // Does a regular file having this output file name exist?
-                if (std::filesystem::is_regular_file(file_status))
+                if (!force && std::filesystem::is_regular_file(file_status))
                 {
                     std::cerr << "Target output file already exists: "
                               << out_file << std::endl;

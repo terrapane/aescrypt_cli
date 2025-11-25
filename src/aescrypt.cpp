@@ -335,6 +335,7 @@ MODE:
     -g, --generate   [generate  ] Generate a key file with random data
 
 FUNCTIONAL:
+    -f, --force      [force     ] Force overwriting output file if it exists
     -i, --iterations [iterations] Number of KDF iterations (default is 300000)
     -k, --keyfile    [keyfile   ] The key file to use
     -o, --outfile    [outfile   ] Output file when operating on a single file
@@ -419,6 +420,7 @@ std::pair<bool, bool> ParseOptions(Terra::ProgramOptions::Parser &parser,
         { "outfile",    "o", "outfile",    false,  true  },
         { "password",   "p", "password",   false,  true  },
         { "question",   "?", "",           false,  false },
+        { "force",      "f", "force",      false,  false },
         { "quiet",      "q", "quiet",      false,  false },
         { "version",    "v", "version",    false,  false }
     };
@@ -541,6 +543,7 @@ int main(int argc, char *argv[])
     std::vector<SecureString> filenames;        // Filenames to encrypt/decrypt
     std::size_t stdin_filenames_seen{};         // Count of input files "-"
     std::size_t key_size{Default_Key_File_Size};// Default generated key length
+    bool force = false;                         // Force overwriting output file
     bool quiet = false;                         // Suppress progress output
     Terra::Logger::NullOStream null_stream;     // For no logging output
 
@@ -842,6 +845,9 @@ int main(int argc, char *argv[])
             logger = std::make_shared<Terra::Logger::Logger>(null_stream);
         }
 
+        // Was the force option given?
+        if (options_parser.OptionGiven("force")) force = true;
+
         // Was quiet operation requested?
         if (options_parser.OptionGiven("quiet")) quiet = true;
     }
@@ -979,6 +985,7 @@ int main(int argc, char *argv[])
             // Encrypt files, disabling progress updates as appropriate
             bool encrypt_result = EncryptFiles(logger,
                                                process_control,
+                                               force,
                                                (quiet || using_stdout),
                                                password,
                                                iterations,
@@ -992,6 +999,7 @@ int main(int argc, char *argv[])
         // Decrypt files, disabling progress updates as appropriate
         auto decrypt_result = DecryptFiles(logger,
                                            process_control,
+                                           force,
                                            (quiet || using_stdout),
                                            password,
                                            filenames,

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# Get the AES Crypt binary
+AESCRYPT="$1"
+
+# Ensure this is not an empty string
+if [ -z "$AESCRYPT" ] ; then
+    echo "First argument should be the AES Crypt binary"
+    exit 1
+fi
+
+# Ensure the executable binary exists (and is executable)
+if [ ! -x "$AESCRYPT" ] ; then
+    echo "AES Crypt executable not found: $AESCRYPT"
+    exit 1
+fi
+
+# Switch directories to where the test process resides
+cd $( dirname "${BASH_SOURCE[0]}" ) || exit 1
+
+# Encrypt the sample file
+echo Encrypting sample file
+"$AESCRYPT" -q -e -i 8192 -p password -o /tmp/aescrypt.$$ sample.txt || {
+    echo Error creating encrypted file
+    exit 1
+}
+if [ ! -f /tmp/aescrypt.$$ ] ; then
+    echo Error creating encrypted file
+    exit 1
+fi
+
+# Encrypt the sample file again (this should fail)
+echo Encrypting sample file again
+"$AESCRYPT" -q -e -i 8192 -p password -o /tmp/aescrypt.$$ sample.txt 2>/dev/null && {
+    echo Error creating encrypted file again
+    rm -f /tmp/aescrypt.$$
+    exit 1
+}
+
+# Encrypt the sample file forcefully (overwriting the existing file)
+echo Encrypting sample file forcefully
+"$AESCRYPT" -f -q -e -i 8192 -p password -o /tmp/aescrypt.$$ sample.txt || {
+    echo Error creating encrypted file forcefully
+    rm -f /tmp/aescrypt.$$
+    exit 1
+}
+
+rm -f /tmp/aescrypt.$$

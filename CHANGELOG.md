@@ -1,6 +1,6 @@
 # Change Log
 
-v4.4.0.1 (in progress)
+v4.5.0.0 (in progress)
 
 - Revised Windows resource files to automate version and copyright information
 - Revisions to align with changes in dependencies

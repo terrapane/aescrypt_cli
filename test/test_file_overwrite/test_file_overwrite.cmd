@@ -22,14 +22,10 @@ if "%AESCRYPT%" == "" (
 )
 
 @rem Ensure CMAKE_CONFIG_TYPE is not an empty string
-if "%CMAKE_CONFIG_TYPE%" == "" (
-    echo The CMAKE_CONFIG_TYPE variable must contain the build type
-    set RESULT=1
-    goto :EXIT_RESULT
+if "%CMAKE_CONFIG_TYPE%" NEQ "" (
+    @rem Use the CMAKE_CONFIG_TYPE env variable to determine the correct executable
+    set "AESCRYPT=!AESCRYPT:/CONFIG_TYPE/=/%CMAKE_CONFIG_TYPE%/!"
 )
-
-@rem Use the CMAKE_CONFIG_TYPE env variable to determine the correct executable
-set "AESCRYPT=!AESCRYPT:/CONFIG_TYPE/=/%CMAKE_CONFIG_TYPE%/!"
 
 @rem Convert pathnames to use \ rather than / (CMake uses /) to pacify Windows
 set "AESCRYPT=%AESCRYPT:/=\%"
@@ -46,15 +42,15 @@ cd /D "%~dp0"
 
 @rem Encrypt the sample file
 echo Encrypting sample file
-"%AESCRYPT%" -q -e -i 8192 -p password -o "%TEMP%\aescrypt_test" sample.txt || (
+"%AESCRYPT%" -q -e -i 8192 -p password -o "%TEMP%\aescrypt_test_overwrite" sample.txt || (
     echo Error encrypting sample file
     set RESULT=1
-    if exist "%TEMP%\aescrypt_test" (
-        del "%TEMP%\aescrypt_test"
+    if exist "%TEMP%\aescrypt_test_overwrite" (
+        del "%TEMP%\aescrypt_test_overwrite"
     )
     goto :EXIT_RESULT
 )
-if not exist "%TEMP%\aescrypt_test" (
+if not exist "%TEMP%\aescrypt_test_overwrite" (
     echo Error encrypting sample file
     set RESULT=1
     goto :EXIT_RESULT
@@ -62,25 +58,25 @@ if not exist "%TEMP%\aescrypt_test" (
 
 @rem Encrypt the sample file again (should fail)
 echo Encrypting sample file again
-"%AESCRYPT%" -q -e -i 8192 -p password -o "%TEMP%\aescrypt_test" sample.txt && (
+"%AESCRYPT%" -q -e -i 8192 -p password -o "%TEMP%\aescrypt_test_overwrite" sample.txt && (
     echo Error encrypting sample file again
     set RESULT=1
-    del "%TEMP%\aescrypt_test"
+    del "%TEMP%\aescrypt_test_overwrite"
     goto :EXIT_RESULT
 )
 
 @rem Encrypt the sample file forcefully (overwriting the existing file)
 echo Encrypting sample file forcefully
-"%AESCRYPT%" -f -q -e -i 8192 -p password -o "%TEMP%\aescrypt_test" sample.txt || (
+"%AESCRYPT%" -f -q -e -i 8192 -p password -o "%TEMP%\aescrypt_test_overwrite" sample.txt || (
     echo Error encrypting sample file forcefully
     set RESULT=1
-    if exist "%TEMP%\aescrypt_test" (
-        del "%TEMP%\aescrypt_test"
+    if exist "%TEMP%\aescrypt_test_overwrite" (
+        del "%TEMP%\aescrypt_test_overwrite"
     )
     goto :EXIT_RESULT
 )
 
-del "%TEMP%\aescrypt_test"
+del "%TEMP%\aescrypt_test_overwrite"
 
 :EXIT_RESULT
 exit /B %RESULT%

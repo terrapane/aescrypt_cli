@@ -22,14 +22,10 @@ if "%AESCRYPT%" == "" (
 )
 
 @rem Ensure CMAKE_CONFIG_TYPE is not an empty string
-if "%CMAKE_CONFIG_TYPE%" == "" (
-    echo The CMAKE_CONFIG_TYPE variable must contain the build type
-    set RESULT=1
-    goto :EXIT_RESULT
+if "%CMAKE_CONFIG_TYPE%" NEQ "" (
+    @rem Use the CMAKE_CONFIG_TYPE env variable to determine the correct executable
+    set "AESCRYPT=!AESCRYPT:/CONFIG_TYPE/=/%CMAKE_CONFIG_TYPE%/!"
 )
-
-@rem Use the CMAKE_CONFIG_TYPE env variable to determine the correct executable
-set "AESCRYPT=!AESCRYPT:/CONFIG_TYPE/=/%CMAKE_CONFIG_TYPE%/!"
 
 @rem Convert pathnames to use \ rather than / (CMake uses /) to pacify Windows
 set "AESCRYPT=%AESCRYPT:/=\%"

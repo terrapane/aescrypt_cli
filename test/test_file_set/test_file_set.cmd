@@ -22,14 +22,10 @@ if "%AESCRYPT%" == "" (
 )
 
 @rem Ensure CMAKE_CONFIG_TYPE is not an empty string
-if "%CMAKE_CONFIG_TYPE%" == "" (
-    echo The CMAKE_CONFIG_TYPE variable must contain the build type
-    set RESULT=1
-    goto :EXIT_RESULT
+if "%CMAKE_CONFIG_TYPE%" NEQ "" (
+    @rem Use the CMAKE_CONFIG_TYPE env variable to determine the correct executable
+    set "AESCRYPT=!AESCRYPT:/CONFIG_TYPE/=/%CMAKE_CONFIG_TYPE%/!"
 )
-
-@rem Use the CMAKE_CONFIG_TYPE env variable to determine the correct executable
-set "AESCRYPT=!AESCRYPT:/CONFIG_TYPE/=/%CMAKE_CONFIG_TYPE%/!"
 
 @rem Convert pathnames to use \ rather than / (CMake uses /) to pacify Windows
 set "AESCRYPT=%AESCRYPT:/=\%"
@@ -48,20 +44,20 @@ cd /D "%~dp0"
 for %%s in (vectors\*.dat) do (
     echo Encrypting: %%s
     "%AESCRYPT%" -q -e -i 8192 -p password -o - "%%s" ^
-        | "%AESCRYPT%" -q -d -p password -o "%TEMP%\aescrypt_test" -
-    if not exist "%TEMP%\aescrypt_test" (
+        | "%AESCRYPT%" -q -d -p password -o "%TEMP%\aescrypt_test_file_set" -
+    if not exist "%TEMP%\aescrypt_test_file_set" (
         echo Error with test vector: %%s
         set RESULT=1
         goto :EXIT_RESULT
     )
-    fc "%%s" "%TEMP%\aescrypt_test" > nul
+    fc "%%s" "%TEMP%\aescrypt_test_file_set" > nul
     if errorlevel 1 (
         echo Error with test vector: %%s
-        del "%TEMP%\aescrypt_test"
+        del "%TEMP%\aescrypt_test_file_set"
         set RESULT=1
         goto :EXIT_RESULT
     )
-    del "%TEMP%\aescrypt_test"
+    del "%TEMP%\aescrypt_test_file_set"
 )
 
 :EXIT_RESULT

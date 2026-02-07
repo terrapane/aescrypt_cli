@@ -7,7 +7,7 @@ project(aescrypt_cli
         HOMEPAGE_URL "https://www.aescrypt.com"
         LANGUAGES CXX)
 
-set(COPYRIGHT_TEXT "Copyright (C) 2025")
+set(COPYRIGHT_TEXT "Copyright (C) 2026")
 set(AUTHOR_TEXT    "Terrapane Corporation")
 
 # Tests are built by default when this is a top-level project

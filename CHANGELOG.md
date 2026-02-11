@@ -1,6 +1,11 @@
 # Change Log
 
-v4.5.0.0
+v4.6.0
+
+- Updated man page
+- Updated CHANGELOG
+
+v4.5.0
 
 - Revised Windows resource files to automate version and copyright information
 - Added a "force" option to allow force overwriting output files

@@ -46,7 +46,7 @@ if(aescrypt_cli_INSTALL AND (UNIX AND NOT APPLE))
     string(REPLACE ";" "\\;" DESCRIPTION_TEXT "${DESCRIPTION_TEXT}")
     string(REGEX REPLACE "\n$" "" DESCRIPTION_TEXT "${DESCRIPTION_TEXT}")
     configure_file(metainfo.xml.in com.terrapane.${PROJECT_NAME}.metainfo.xml @ONLY)
-    install(FILES ${PROJECT_BINARY_DIR}/packaging/com.terrapane.${PROJECT_NAME}.metainfo.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications/)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/com.terrapane.${PROJECT_NAME}.metainfo.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications/)
 
     # Note the dependency so that the description text is never out-of-sync
     set_property(

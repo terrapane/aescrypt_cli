@@ -1,10 +1,10 @@
 # This file facilitates creation of package files for OS installation
-if(aescrypt_cli_INSTALL)
+if(aescrypt_cli_INSTALL AND (UNIX AND NOT APPLE))
     include(InstallRequiredSystemLibraries)
-    set(CPACK_PACKAGE_NAME "aescrypt_cli")
-    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
+    set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "AES Crypt CLI")
     set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/description.txt")
-    set(CPACK_PACKAGE_VENDOR "Terrapane Group, Inc.")
+    set(CPACK_PACKAGE_VENDOR "${AUTHOR_TEXT}")
     set(CPACK_PACKAGE_CONTACT "support@terrapane.com")
     set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.md")
     set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
@@ -28,11 +28,10 @@ if(aescrypt_cli_INSTALL)
     endif()
     if(LINUX)
         set(CPACK_RPM_PACKAGE_RELEASE 1)
-        set(CPACK_RPM_PACKAGE_GROUP "Unspecified")
-        set(CPACK_RPM_PACKAGE_LICENSE "Commercial; See https://www.aescrypt.com/license.html")
+        set(CPACK_RPM_PACKAGE_GROUP "Applications/Utilities")
+        set(CPACK_RPM_PACKAGE_LICENSE "Proprietary")
         set(CPACK_RPM_PACKAGE_REQUIRES "glibc, libstdc++")
         set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
-        set(CPACK_DEBIAN_PACKAGE_LICENSE "Commercial; See https://www.aescrypt.com/license.html")
         set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libstdc++6")
         set(CPACK_GENERATOR RPM DEB TGZ)
     elseif(WIN32)
@@ -41,4 +40,19 @@ if(aescrypt_cli_INSTALL)
         set(CPACK_GENERATOR TGZ)
     endif()
     include(CPack)
+
+    # Create the metainfo file and instal it
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/description.txt" DESCRIPTION_TEXT)
+    string(REPLACE ";" "\\;" DESCRIPTION_TEXT "${DESCRIPTION_TEXT}")
+    string(REGEX REPLACE "\n$" "" DESCRIPTION_TEXT "${DESCRIPTION_TEXT}")
+    configure_file(metainfo.xml.in com.terrapane.${PROJECT_NAME}.metainfo.xml @ONLY)
+    install(FILES ${PROJECT_BINARY_DIR}/packaging/com.terrapane.${PROJECT_NAME}.metainfo.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications/)
+
+    # Note the dependency so that the description text is never out-of-sync
+    set_property(
+        DIRECTORY
+        APPEND
+        PROPERTY CMAKE_CONFIGURE_DEPENDS
+            "${CMAKE_CURRENT_SOURCE_DIR}/description.txt"
+    )
 endif()

@@ -3,7 +3,8 @@
 v4.6.0
 
 - Updated man page
-- Updated CHANGELOG
+- CMake configuration changes
+- Introduced metainfo.xml file
 
 v4.5.0
 

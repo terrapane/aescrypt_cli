@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>com.terrapane.@PROJECT_NAME@</id>
+  <name>@CPACK_PACKAGE_DESCRIPTION_SUMMARY@</name>
+  <summary>AES Crypt file encryption utility</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary=https://www.aescrypt.com/license.html</project_license>
+  <developer id="com.terrapane">
+    <name>@AUTHOR_TEXT@</name>
+  </developer>
+  <description>
+    <p>
+@DESCRIPTION_TEXT@
+    </p>
+  </description>
+  <categories>
+    <category>Utility</category>
+    <category>Security</category>
+  </categories>
+  <launchable type="desktop-id">aescrypt.desktop</launchable>
+  <icon type="stock">aescrypt_lock</icon>
+  <provides>
+    <binary>aescrypt</binary>
+    <mediatype>application/aescrypt</mediatype>
+  </provides>
+  <url type="homepage">https://www.aescrypt.com/</url>
+  <url type="contact">https://www.aescrypt.com/contact/</url>
+  <content_rating type="oars-1.1" />
+</component>

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 # Define the AES Crypt CLI project
 project(aescrypt_cli
         VERSION 4.5.0.0
-        DESCRIPTION "AES Crypt Command-Line (CLI) Program"
+        DESCRIPTION "AES Crypt Command-Line (CLI)"
         HOMEPAGE_URL "https://www.aescrypt.com"
         LANGUAGES CXX)
 
@@ -23,8 +23,8 @@ else()
     endif()
 endif()
 
-# Option to control ability to install the program
-option(aescrypt_cli_INSTALL "Install the AES Crypt CLI Program" ON)
+# Option to control ability to install the software
+option(aescrypt_cli_INSTALL "Install the AES Crypt CLI software" ON)
 
 # Option to control ability to install dependencies
 option(aescrypt_cli_DEPENDENCIES_INSTALL "Install dependencies" OFF)

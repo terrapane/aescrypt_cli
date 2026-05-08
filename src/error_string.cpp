@@ -22,6 +22,7 @@
 #include <string>
 #include <cstring>
 #include <terra/logger/logger.h>
+#include "error_string.h"
 
 /*
  *  GetErrorString()
@@ -47,10 +48,10 @@ std::string GetErrorString(int error)
     std::array<char, 256> buffer{};
 
     // Retrieve the error string
-#ifdef HAVE_POSIX_STRERROR_R
-    int result = ::strerror_r(error, buffer.data(), buffer.size());
-#else
+#ifdef HAVE_STRERROR_S
     errno_t result = ::strerror_s(buffer.data(), buffer.size(), error);
+#else
+    int result = ::strerror_r(error, buffer.data(), buffer.size());
 #endif
 
     // Ensure the error message was retrieved
@@ -58,7 +59,7 @@ std::string GetErrorString(int error)
 
     return std::string(buffer.data());
 #else
-    return ::strerror(error);
+    return ::strerror(error); // NOLINT(concurrency-mt-unsafe)
 #endif
 }
 

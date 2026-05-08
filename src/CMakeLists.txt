@@ -10,12 +10,15 @@ find_package(Threads REQUIRED)
 # Create the executable
 add_executable(aescrypt
     aescrypt.cpp
-    key_file.cpp
-    error_string.cpp
-    password_prompt.cpp
-    encrypt_files.cpp
+    command_arguments.cpp
     decrypt_files.cpp
-    password_convert.cpp)
+    encrypt_files.cpp
+    error_string.cpp
+    key_file.cpp
+    password_prompt.cpp
+    password_convert.cpp
+    usage.cpp
+    version.cpp)
 
 # Include version.rc (version data) and aescrypt.rc (application icon)
 if(WIN32)

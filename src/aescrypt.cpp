@@ -10,7 +10,8 @@
  *
  *  Description:
  *      This is the main implementation file for the AES Crypt command-line
- *      program.
+ *      program responsible for signal handling, setting the locale, parsing
+ *      command-line arguments, and calling encryption/decryption routines.
  *
  *  Portability Issues:
  *      None.
@@ -46,7 +47,9 @@
 #include <terra/aescrypt_lm/aescrypt_lm.h>
 #endif
 #include "aescrypt.h"
+#include "command_arguments.h"
 #include "version.h"
+#include "usage.h"
 #include "mode.h"
 #include "secure_containers.h"
 #include "secure_program_options.h"
@@ -62,6 +65,10 @@ static_assert(CHAR_BIT == 8);
 namespace
 {
 
+// Process control is defined to be "global,"" as it is utilized by the
+// signal handler and, therefore, needs to be accessible within this module;
+// since it is in an anonymous namespace, it does not actually polite the
+// global namespace
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 ProcessControl process_control;
 
@@ -191,320 +198,6 @@ void InstallSignalHandlers()
 #endif
 }
 
-/*
- *  Version()
- *
- *  Description:
- *      Display program version information.
- *
- *  Parameters:
- *      None.
- *
- *  Returns:
- *      Nothing.
- *
- *  Comments:
- *      None.
- */
-void Version()
-{
-    const std::u8string trial = u8"Unlicensed (License Required)";
-    std::u8string licensee;
-
-#ifdef AESCRYPT_ENABLE_LICENSE_MODULE
-    licensee = Terra::ACLM::GetLicensee();
-#endif
-
-    // If no licensee was determined, it must be unlicensed
-    if (licensee.empty()) licensee = trial;
-
-    std::cout << Terra::Project_Name << " " << Terra::Project_Version
-              << std::endl
-              << Terra::Copyright_Text
-              << std::endl
-              << Terra::Author_Text
-              << std::endl;
-
-    std::cout << "Licensee: ";
-    std::cout << std::string(licensee.begin(), licensee.end());
-    std::cout << std::endl;
-}
-
-#ifdef _WIN32
-
-/*
- *  ConvertArguments()
- *
- *  Description:
- *      This function will convert program arguments using wchar_t (Unicode)
- *      to UTF-8, so that they may be processed by the Program Options Parser.
- *
- *  Parameters:
- *      argc [in]
- *          The argument count passed to main().
- *
- *      argv [in]
- *          The argument list passed to main().
- *
- *  Returns:
- *      A vector of strings representing the converted arguments.
- *
- *  Comments:
- *      None.
- */
-SecureVector<SecureString> ConvertArguments(const int argc,
-                                            const wchar_t *const argv[])
-{
-    // Ensure Windows is using two octet wchar_t values
-    static_assert(sizeof(wchar_t) == 2,
-                  "wchar_t should be two octets in size on Windows");
-
-    SecureVector<SecureString> arguments;
-
-    for (std::size_t i = 0; i < argc; i++)
-    {
-        // How many octets are in the string?
-        auto arg_length = wcslen(argv[i]) * sizeof(wchar_t);
-
-        // If the length is zero, just push an empty string onto the vector
-        if (arg_length == 0)
-        {
-            arguments.emplace_back(Terra::SecUtil::SecureString());
-            continue;
-        }
-
-        // Create a string to hold the UTF-8 octets
-        SecureString argument(arg_length + (arg_length >> 1), '\0');
-
-        // Perform the UTF-16LE to UTF-8 conversion
-        auto [result, length] = Terra::CharUtil::ConvertUTF16ToUTF8(
-            std::span<const std::uint8_t>{
-                reinterpret_cast<const std::uint8_t *>(argv[i]),
-                arg_length},
-            argument);
-
-        // A zero indicates an error
-        if (result == false)
-        {
-            throw std::runtime_error("Failed to convert command arguments");
-        }
-
-        // Reduce the string size to match the length
-        argument.resize(length);
-
-        // Put the string on the arguments vector
-        arguments.emplace_back(argument);
-    }
-
-    return arguments;
-}
-
-#endif
-
-/*
- *  Usage()
- *
- *  Description:
- *      Display program usage.
- *
- *  Parameters:
- *      None.
- *
- *  Returns:
- *      Nothing.
- *
- *  Comments:
- *      None.
- */
-void Usage()
-{
-    const std::string usage =
-R"(usage: aescrypt [MODE] [OPTIONS] [FILE]...
-
-EXAMPLES:
-    aescrypt -e filename.txt
-    aescrypt -d -p secret filename.txt.aes
-    aescrypt -e -p secret -o filename.txt.aes -
-    aescrypt -g -s 128 -k /path/to/filename.key
-    aescrypt -g -k /path/to/filename.key
-
-    OPTIONS           NAME        DESCRIPTION
-
-MODE:
-    -d, --decrypt    [decrypt   ] Decrypt the specified file(s)
-    -e, --encrypt    [encrypt   ] Encrypt the specified file(s)
-    -g, --generate   [generate  ] Generate a key file with random data
-
-FUNCTIONAL:
-    -f, --force      [force     ] Force overwriting output file if it exists
-    -i, --iterations [iterations] Number of KDF iterations (default is 300000)
-    -k, --keyfile    [keyfile   ] The key file to use
-    -o, --outfile    [outfile   ] Output file when operating on a single file
-    -p, --password   [password  ] Password for encryption or decryption
-    -q, --quiet      [quiet     ] Do not produce progress output to stdout
-    -s, --keysize    [keysize   ] The key size in octets to use with --generate
-                                  (default is 64 octets; 384 bits of entropy)
-
-DEBUGGING:
-    -l, --logging    [logging   ] Enable logging output to stderr
-
-HELP/VERSION:
-    -h, --help       [help      ] Displays this help information
-    -?               [question  ] Displays this help information
-    -v, --version    [version   ] Display program version information
-
-COMMENTS:
-    * Exactly one MODE must be selected (encrypt, decrypt, or generate)
-    * If a password or key file is not specified, user will be prompted
-    * One may read/write from/to stdin/stdout using "-" as the filename
-    * By default, .aes will be added when encrypting, removed when decrypting
-    * One may use -o to specify the output file if operating on a single file)";
-
-    std::cerr << usage << std::endl;
-}
-
-/*
- *  ParseOptions()
- *
- *  Description:
- *      This function will parse the command-line options and output an
- *      error if one is observed.  For options like "help", this function
- *      will emit program usage and instruct the caller to stop execution.
- *
- *  Parameters:
- *      parser [in/out]
- *          The program options Parser to use to parse options.
- *
- *      argc [in]
- *          The argument count passed to main().
- *
- *      argv [in]
- *          The argument list passed to main() or wmain() (for Windows).
- *
- *  Returns:
- *      This function will return a pair of boolean values.  If the first
- *      boolean is false, it indicates an error should be returned to the OS
- *      upon return from this function.  If the first boolean is true, then it
- *      means there were no critical errors.  In that case, the second boolean
- *      should be observed.  If the second boolean is false, it means the
- *      program should not continue and a success code should be returned to
- *      the OS.  An example of this is when the user uses an option flag
- *      that is handled by this function (e.g., program usage).  If both
- *      are true, it means the program should continue upon return with normal
- *      operation.
- *
- *  a success code
- *      should be returned to the OS.  If both the first and second boolean
- *      values are true, it means the caller should continue with normal
- *      operation.
- *
- *  Comments:
- *      None.
- */
-template<typename T>
-std::pair<bool, bool> ParseOptions(Terra::ProgramOptions::Parser &parser,
-                                   const int argc,
-                                   const T *const argv[])
-{
-    // clang-format off
-    const Terra::ProgramOptions::Options options =
-    {
-    //    Name        Short  Long          Multi   Argument
-        { "decrypt",    "d", "decrypt",    false,  false },
-        { "encrypt",    "e", "encrypt",    false,  false },
-        { "generate",   "g", "generate",   false,  false },
-        { "help",       "h", "help",       false,  false },
-        { "keyfile",    "k", "keyfile",    false,  true  },
-        { "keysize",    "s", "keysize",    false,  true  },
-        { "iterations", "i", "iterations", false,  true  },
-        { "logging",    "l", "logging",    false,  false },
-        { "outfile",    "o", "outfile",    false,  true  },
-        { "password",   "p", "password",   false,  true  },
-        { "question",   "?", "",           false,  false },
-        { "force",      "f", "force",      false,  false },
-        { "quiet",      "q", "quiet",      false,  false },
-        { "version",    "v", "version",    false,  false }
-    };
-    // clang-format on
-
-    // Configure the programs option object with the above options specification
-    try
-    {
-        parser.SetOptions(options);
-    }
-    catch (const Terra::ProgramOptions::SpecificationException &e)
-    {
-        std::cerr << "Program options exception error: "
-                  << e.what()
-                  << std::endl;
-        return {false, false};
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unknown error parsing program options: "
-                  << e.what()
-                  << std::endl;
-        return {false, false};
-    }
-    catch (...)
-    {
-        std::cerr << "Unknown error parsing program options"
-                  << std::endl;
-        return {false, false};
-    }
-
-    // Now parse the program options
-
-    try
-    {
-#ifdef _WIN32
-        SecureVector<SecureString> arguments = ConvertArguments(argc, argv);
-        parser.ParseArguments(
-            std::vector<std::string_view>(arguments.begin(), arguments.end()));
-#else
-        parser.ParseArguments(argc, argv);
-#endif
-
-        // Was the version requested?
-        if (parser.GetOptionCount("version") > 0)
-        {
-            // Print the program version information
-            Version();
-
-            return {true, false};
-        }
-
-        // Was help requested?
-        if (parser.OptionGiven("help") || parser.OptionGiven("question"))
-        {
-            // Print the program usage information
-            Usage();
-
-            return {true, false};
-        }
-    }
-    catch (const Terra::ProgramOptions::OptionsException &e)
-    {
-        std::cerr << e.what() << std::endl;
-        return {false, false};
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unexpected error parsing program options: "
-                  << e.what()
-                  << std::endl;
-        return {false, false};
-    }
-    catch (...)
-    {
-        std::cerr << "Unexpected error parsing program options"
-                  << std::endl;
-        return {false, false};
-    }
-
-    return {true, true};
-}
-
 } // namespace
 
 /*
@@ -565,7 +258,7 @@ int main(int argc, char *argv[])
     // Set the locale based on the current environment
     if (std::setlocale(LC_CTYPE, "") == nullptr)
     {
-        std::cerr << "Failed to set the local based on the current environment"
+        std::cerr << "Failed to set the locale based on the current environment"
                   << std::endl;
         return EXIT_FAILURE;
     }
@@ -587,10 +280,27 @@ int main(int argc, char *argv[])
 #endif
 
     // Parse the program options using the program_options object
-    auto [parse_success, parse_continue] =
-                                    ParseOptions(options_parser, argc, argv);
+    auto parse_success = Terra::ParseOptions(options_parser, argc, argv);
     if (!parse_success) return EXIT_FAILURE;
-    if (!parse_continue) return EXIT_SUCCESS;
+
+    // Was the version information requested?
+    if (options_parser.GetOptionCount("version") > 0)
+    {
+        // Print the program version information
+        Terra::Version();
+
+        return EXIT_SUCCESS;
+    }
+
+    // Was help requested?
+    if (options_parser.OptionGiven("help") ||
+        options_parser.OptionGiven("question"))
+    {
+        // Print the program usage information
+        Terra::Usage();
+
+        return EXIT_SUCCESS;
+    }
 
     try
     {

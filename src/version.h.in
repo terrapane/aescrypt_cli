@@ -1,7 +1,7 @@
 /*
  *  version.h
  *
- *  Copyright (C) 2025
+ *  Copyright (C) 2025, 2026
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -26,5 +26,22 @@ static const std::string Project_Name = "@PROJECT_NAME@";
 static const std::string Project_Version = "@PROJECT_VERSION@";
 static const std::string Copyright_Text = "@COPYRIGHT_TEXT@";
 static const std::string Author_Text = "@AUTHOR_TEXT@";
+
+/*
+ *  Version()
+ *
+ *  Description:
+ *      Display AES Crypt version information.
+ *
+ *  Parameters:
+ *      None.
+ *
+ *  Returns:
+ *      Nothing.
+ *
+ *  Comments:
+ *      None.
+ */
+void Version();
 
 } // namespace Terra

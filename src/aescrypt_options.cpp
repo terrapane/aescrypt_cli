@@ -1,5 +1,5 @@
 /*
- *  command_arguments.cpp
+ *  aescrypt_options.cpp
  *
  *  Copyright (C) 2026
  *  Terrapane Corporation
@@ -21,7 +21,7 @@
 #include <utility>
 #include <stdexcept>
 #include <cstddef>
-#include "command_arguments.h"
+#include "aescrypt_options.h"
 
 namespace Terra
 {

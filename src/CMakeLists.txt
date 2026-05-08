@@ -10,7 +10,7 @@ find_package(Threads REQUIRED)
 # Create the executable
 add_executable(aescrypt
     aescrypt.cpp
-    command_arguments.cpp
+    aescrypt_options.cpp
     decrypt_files.cpp
     encrypt_files.cpp
     error_string.cpp

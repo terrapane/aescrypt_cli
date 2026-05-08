@@ -1,5 +1,5 @@
 /*
- *  command_arguments.h
+ *  aescrypt_options.h
  *
  *  Copyright (C) 2026
  *  Terrapane Corporation

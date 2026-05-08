@@ -47,7 +47,7 @@
 #include <terra/aescrypt_lm/aescrypt_lm.h>
 #endif
 #include "aescrypt.h"
-#include "command_arguments.h"
+#include "aescrypt_options.h"
 #include "version.h"
 #include "usage.h"
 #include "mode.h"

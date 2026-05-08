@@ -21,8 +21,10 @@
 #include <utility>
 #include <stdexcept>
 #include <cstddef>
+#ifdef _WIN32
 #include <terra/charutil/character_utilities.h>
 #include "secure_containers.h"
+#endif
 #include "aescrypt_options.h"
 
 namespace Terra

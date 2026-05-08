@@ -2,6 +2,9 @@
 
 v4.6.0
 
+- Restructure the aescrypt.cpp file to move some code to other modules,
+  including version, usage, and options processing
+- Changes the way in which signal notify the rest of the code about events
 - Updated man page
 - CMake configuration changes
 - Introduced metainfo.xml file

@@ -1,7 +1,7 @@
 /*
  *  aescrypt.cpp
  *
- *  Copyright (C) 2025
+ *  Copyright (C) 2024, 2025, 2026
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <csignal>
+#include <atomic>
 #include <utility>
 #include <cstddef>
 #include <memory>
@@ -61,6 +62,7 @@ static_assert(CHAR_BIT == 8);
 namespace
 {
 
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 ProcessControl process_control;
 
 /*
@@ -117,9 +119,8 @@ void SignalHandler(int signal_number)
     // If terminating, set the flag and notify all waiting threads
     if (terminate)
     {
-        std::lock_guard<std::mutex> lock(process_control.mutex);
-        process_control.terminate = true;
-        process_control.cv.notify_all();
+        process_control.signal_terminate.store(true);
+        process_control.signal_terminate.notify_all();
     }
 }
 
@@ -546,6 +547,7 @@ int main(int argc, char *argv[])
     bool force = false;                         // Force overwriting output file
     bool quiet = false;                         // Suppress progress output
     Terra::Logger::NullOStream null_stream;     // For no logging output
+    int exit_status{};                          // Exit status
 
 #ifdef _WIN32
     // On Windows, use UTF-8 for input/output to console
@@ -739,7 +741,7 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
             }
 
-            // If the length is zero, that is invalid
+            // The keyfile cannot cannot be stdout when encrypting or decrypting
             if ((key_file == "-") && (mode != AESCryptMode::KeyGenerate))
             {
                 std::cerr << "When encrypting or decrypting, the key file "
@@ -907,8 +909,8 @@ int main(int argc, char *argv[])
 #ifdef _WIN32
         if (using_stdout)
         {
-            std::cerr << "On Windows, output to stdout requires a password "
-                         "given via -p or -k"
+            std::cerr << "On Windows, one cannot be prompted for a password if "
+                         "also writing to stdout"
                       << std::endl;
             return EXIT_FAILURE;
         }
@@ -968,6 +970,19 @@ int main(int argc, char *argv[])
     // Install signal handlers to ensure proper cleanup if user aborts
     InstallSignalHandlers();
 
+    // Launch thread to monitor for signal-driven termination events
+    std::thread signal_notification(
+        [&]()
+        {
+            // Wait for termination signal
+            process_control.signal_terminate.wait(false);
+
+            // Lock the mutex to signal waiting threads to terminate
+            std::lock_guard<std::mutex> lock(process_control.mutex);
+            process_control.terminate = true;
+            process_control.cv.notify_all();
+        });
+
     try
     {
         // If encrypting, do that now
@@ -993,31 +1008,40 @@ int main(int argc, char *argv[])
                                                output_file,
                                                extensions);
 
-            return (encrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
+            exit_status = (encrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
         }
+        else
+        {
+            // Decrypt files, disabling progress updates as appropriate
+            auto decrypt_result = DecryptFiles(logger,
+                                               process_control,
+                                               force,
+                                               (quiet || using_stdout),
+                                               password,
+                                               filenames,
+                                               output_file);
 
-        // Decrypt files, disabling progress updates as appropriate
-        auto decrypt_result = DecryptFiles(logger,
-                                           process_control,
-                                           force,
-                                           (quiet || using_stdout),
-                                           password,
-                                           filenames,
-                                           output_file);
-
-        return (decrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
+            exit_status = (decrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
+        }
     }
     catch (const std::exception &e)
     {
         logger->critical << "Exception caught in main: " << e.what();
         std::cerr << "Failed due to unhandled exception caught in main: "
                   << e.what();
-        return EXIT_FAILURE;
+        exit_status = EXIT_FAILURE;
     }
     catch (...)
     {
         logger->critical << "Unknown exception caught in main";
         std::cerr << "Unknown exception caught in main; exiting";
-        return EXIT_FAILURE;
+        exit_status = EXIT_FAILURE;
     }
+
+    // Wait for the signal notification thread to exit
+    process_control.signal_terminate.store(true);
+    process_control.signal_terminate.notify_all();
+    signal_notification.join();
+
+    return exit_status;
 }

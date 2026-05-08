@@ -1,7 +1,7 @@
 /*
  *  process_control.h
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2024, 2026
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -21,11 +21,13 @@
 
 #include <condition_variable>
 #include <mutex>
+#include <atomic>
 
 // Simple structure to facilitate process control
 struct ProcessControl
 {
-    bool terminate = false;
+    std::atomic<bool> signal_terminate{false};
+    bool terminate{false};
     std::condition_variable cv;
     std::mutex mutex;
 };

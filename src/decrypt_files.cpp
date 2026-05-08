@@ -1,7 +1,7 @@
 /*
  *  decrypt_files.cpp
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2024, 2025, 2026
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -638,7 +638,7 @@ bool DecryptFiles(
             return false;
         }
 
-        // If termination requested, return
+        // If termination requested, stop processing files and return
         if (process_control.terminate) return false;
     }
 

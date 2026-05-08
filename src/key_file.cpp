@@ -1,7 +1,7 @@
 /*
  *  key_file.cpp
  *
- *  Copyright (C) 2024, 2025
+ *  Copyright (C) 2024, 2025, 2026
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -26,6 +26,7 @@
 #include <span>
 #include <string>
 #include <utility>
+#include <array>
 #include <terra/random/random_generator.h>
 #include <terra/charutil/character_utilities.h>
 #include "key_file.h"
@@ -39,7 +40,7 @@ namespace
 {
 
 // Character set to use for key files
-static const char Key_Characters[64] =
+const std::array<char, 64> Key_Characters =
 {
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
     'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -220,7 +221,7 @@ bool GenerateKeyFile(Terra::Logger::LoggerPointer parent_logger,
     rng.GetRandomOctets(key);
 
     // Convert each to printable character (retains 6 bits of entropy)
-    for (auto &value : key) value = Key_Characters[(value & 0x3f)];
+    for (auto &value : key) value = std::span(Key_Characters)[(value & 0x3f)];
 
     // Output a stream of octets
     stream.write(reinterpret_cast<char *>(key.data()),

@@ -22,6 +22,7 @@
   <provides>
     <binary>aescrypt</binary>
     <mediatype>application/aescrypt</mediatype>
+    <mediatype>application/aes</mediatype>
   </provides>
   <url type="homepage">https://www.aescrypt.com/</url>
   <url type="contact">https://www.aescrypt.com/contact/</url>

@@ -48,11 +48,11 @@ namespace Terra
 #ifdef _WIN32
 bool ParseOptions(Terra::ProgramOptions::Parser &parser,
                   const int argc,
-                  const wchar_t * const argv[]);
+                  const wchar_t * const argv[]); // NOLINT(*-avoid-c-arrays)
 #else
 bool ParseOptions(Terra::ProgramOptions::Parser &parser,
                   const int argc,
-                  const char * const argv[]);
+                  const char * const argv[]); // NOLINT(*-avoid-c-arrays)
 #endif
 
 } // namespace Terra

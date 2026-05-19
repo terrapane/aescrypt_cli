@@ -1,7 +1,7 @@
 /*
  *  secure_program_options.h
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2024, 2026
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -27,10 +27,18 @@ class SecureOptionsParser : public Terra::ProgramOptions::Parser
 {
     public:
         using Terra::ProgramOptions::Parser::Parser;
-        virtual ~SecureOptionsParser()
+        SecureOptionsParser(const SecureOptionsParser &parser) = default;
+        SecureOptionsParser(SecureOptionsParser &&parser) noexcept = default;
+        ~SecureOptionsParser() override
         {
             SecureOptionsParser::ClearOptions();
         }
+
+        SecureOptionsParser &operator=(
+            const SecureOptionsParser &parser) = default;
+        SecureOptionsParser &operator=(
+            SecureOptionsParser &&parser) = default;
+
         void ClearOptions() override
         {
             // Iterate over each option value and zero memory

@@ -16,7 +16,7 @@
  */
 
 #include <iostream>
-#include <cstdint>
+#include <string>
 #ifdef AESCRYPT_ENABLE_LICENSE_MODULE
 #include <terra/aescrypt_lm/aescrypt_lm.h>
 #endif
@@ -52,16 +52,12 @@ void Version()
     // If no licensee was determined, it must be unlicensed
     if (licensee.empty()) licensee = trial;
 
-    std::cout << Terra::Project_Name << " " << Terra::Project_Version
-              << std::endl
-              << Terra::Copyright_Text
-              << std::endl
-              << Terra::Author_Text
-              << std::endl;
-
-    std::cout << "Licensee: ";
-    std::cout << std::string(licensee.begin(), licensee.end());
-    std::cout << std::endl;
+    std::cout << Terra::Project_Name << " " << Terra::Project_Version << "\n"
+              << Terra::Copyright_Text << "\n"
+              << Terra::Author_Text << "\n"
+              << "Licensee: "
+              << std::string(licensee.begin(), licensee.end())
+              << "\n";
 }
 
 } // namespace Terra

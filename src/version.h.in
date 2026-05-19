@@ -17,15 +17,18 @@
 
 #pragma once
 
-#include <string>
+#include <string_view>
 
 namespace Terra
 {
 
-static const std::string Project_Name = "@PROJECT_NAME@";
-static const std::string Project_Version = "@PROJECT_VERSION@";
-static const std::string Copyright_Text = "@COPYRIGHT_TEXT@";
-static const std::string Author_Text = "@AUTHOR_TEXT@";
+inline constexpr std::string_view Project_Name = "@PROJECT_NAME@";
+
+inline constexpr std::string_view Project_Version = "@PROJECT_VERSION@";
+
+inline constexpr std::string_view Copyright_Text = "@COPYRIGHT_TEXT@";
+
+inline constexpr std::string_view Author_Text = "@AUTHOR_TEXT@";
 
 /*
  *  Version()

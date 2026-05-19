@@ -16,11 +16,13 @@
  *      None.
  */
 
+#include <iostream>
 #if defined(HAVE_STRERROR_R) || defined(HAVE_STRERROR_S)
 #include <array>
 #endif
 #include <string>
 #include <cstring>
+#include <cerrno>
 #include <terra/logger/logger.h>
 #include "error_string.h"
 
@@ -86,7 +88,7 @@ std::string GetErrorString(int error)
 void LogSystemError(const Terra::Logger::LoggerPointer &logger,
                     const std::string &message)
 {
-    std::string os_error = GetErrorString(errno);
+    const std::string os_error = GetErrorString(errno);
 
     logger->error << message
                   << " (" << "errno=" << errno << ", msg=" << os_error << ")"

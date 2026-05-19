@@ -1,7 +1,7 @@
 /*
  *  mode.h
  *
- *  Copyright (C) 2024
+ *  Copyright (C) 2024, 2026
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -17,8 +17,10 @@
 
 #pragma once
 
+#include <cstdint>
+
 // Define the operational modes
-enum class AESCryptMode
+enum class AESCryptMode : std::uint8_t
 {
     Undefined,
     Encrypt,

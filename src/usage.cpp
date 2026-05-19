@@ -81,7 +81,7 @@ COMMENTS:
     * By default, .aes will be added when encrypting, removed when decrypting
     * One may use -o to specify the output file if operating on a single file)";
 
-    std::cerr << usage << std::endl;
+    std::cout << usage << "\n";
 }
 
 }

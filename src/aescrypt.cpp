@@ -21,11 +21,18 @@
 #include <csignal>
 #include <atomic>
 #include <utility>
+#include <cstdint>
 #include <cstddef>
+#include <cstdlib>
 #include <memory>
 #include <iterator>
 #include <algorithm>
 #include <climits>
+#include <vector>
+#include <string>
+#include <exception>
+#include <thread>
+#include <mutex>
 #ifdef _WIN32
 #define NOMINMAX
 #include <Windows.h>
@@ -37,12 +44,11 @@
 #include <clocale>
 #include <langinfo.h>
 #endif
-#include <terra/conio/ansi.h>
 #include <terra/logger/logger.h>
 #include <terra/logger/null_ostream.h>
 #include <terra/secutil/secure_erase.h>
 #include <terra/charutil/character_utilities.h>
-#include <terra/conio/ansi_capable.h>
+#include <terra/program_options/program_options.h>
 #ifdef AESCRYPT_ENABLE_LICENSE_MODULE
 #include <terra/aescrypt_lm/aescrypt_lm.h>
 #endif
@@ -95,33 +101,26 @@ void SignalHandler(int signal_number)
 {
     bool terminate = false;
 
+    // NOLINTBEGIN(misc-include-cleaner)
+
     // Set the termination reason string
     switch (signal_number)
     {
+#ifndef _WIN32
+        case SIGHUP:
+        case SIGQUIT:
+#endif
         case SIGABRT:
-            terminate = true;
-            break;
-
         case SIGINT:
-            terminate = true;
-            break;
-
         case SIGTERM:
             terminate = true;
             break;
 
-#ifndef _WIN32
-        case SIGHUP:
-            terminate = true;
-            break;
-
-        case SIGQUIT:
-            terminate = true;
-            break;
-#endif
         default:
             break;
     }
+
+    // NOLINTEND(misc-include-cleaner)
 
     // If terminating, set the flag and notify all waiting threads
     if (terminate)
@@ -150,20 +149,22 @@ void SignalHandler(int signal_number)
  */
 void InstallSignalHandlers()
 {
+    // NOLINTBEGIN(misc-include-cleaner)
+
 #ifdef _WIN32
     if (signal(SIGABRT, SignalHandler) == SIG_ERR)
     {
-        std::cerr << "Failed to install SIGINT handler" << std::endl;
+        std::cerr << "Failed to install SIGINT handler\n";
     }
 
     if (signal(SIGINT, SignalHandler) == SIG_ERR)
     {
-        std::cerr << "Failed to install SIGINT handler" << std::endl;
+        std::cerr << "Failed to install SIGINT handler\n";
     }
 
     if (signal(SIGTERM, SignalHandler) == SIG_ERR)
     {
-        std::cerr << "Failed to install SIGTERM handler" << std::endl;
+        std::cerr << "Failed to install SIGTERM handler\n";
     }
 #else
     struct sigaction sa = {};
@@ -173,29 +174,31 @@ void InstallSignalHandlers()
 
     if (sigaction(SIGABRT, &sa, nullptr) == -1)
     {
-        std::cerr << "Failed to install SIGABRT handler" << std::endl;
+        std::cerr << "Failed to install SIGABRT handler\n";
     }
 
     if (sigaction(SIGHUP, &sa, nullptr) == -1)
     {
-        std::cerr << "Failed to install SIGHUP handler" << std::endl;
+        std::cerr << "Failed to install SIGHUP handler\n";
     }
 
     if (sigaction(SIGINT, &sa, nullptr) == -1)
     {
-        std::cerr << "Failed to install SIGINT handler" << std::endl;
+        std::cerr << "Failed to install SIGINT handler\n";
     }
 
     if (sigaction(SIGQUIT, &sa, nullptr) == -1)
     {
-        std::cerr << "Failed to install SIGQUIT handler" << std::endl;
+        std::cerr << "Failed to install SIGQUIT handler\n";
     }
 
     if (sigaction(SIGTERM, &sa, nullptr) == -1)
     {
-        std::cerr << "Failed to install SIGTERM handler" << std::endl;
+        std::cerr << "Failed to install SIGTERM handler\n";
     }
 #endif
+
+    // NOLINTEND(misc-include-cleaner)
 }
 
 } // namespace
@@ -256,25 +259,27 @@ int main(int argc, char *argv[])
     _setmode(_fileno(stdout), _O_BINARY);
 #else
     // Set the locale based on the current environment
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     if (std::setlocale(LC_CTYPE, "") == nullptr)
     {
         std::cerr << "Failed to set the locale based on the current environment"
-                  << std::endl;
+                  << "\n";
         return EXIT_FAILURE;
     }
 
     {
         // Warn if the locale's character encoding is not UTF-8
+        // NOLINTNEXTLINE(concurrency-mt-unsafe)
         const std::string encoding = nl_langinfo(CODESET);
         if ((encoding != "UTF-8"))
         {
             std::cerr << "Warning: Your locale is set to '"
                       << encoding
                       << "', but 'UTF-8' required for Unicode.  Thus, do not"
-                      << std::endl
+                      << "\n"
                       << "         "
                       << "use passwords with non-ASCII characters."
-                      << std::endl;
+                      << "\n";
         }
     }
 #endif
@@ -330,7 +335,7 @@ int main(int argc, char *argv[])
             if (stdin_filenames_seen > 1)
             {
                 std::cerr << "stdin (\"-\") cannot be specified more than once"
-                          << std::endl;
+                          << "\n";
                 return EXIT_FAILURE;
             }
         }
@@ -338,8 +343,7 @@ int main(int argc, char *argv[])
         // Paranoia check: container size should match file_count
         if (file_count != filenames.size())
         {
-            std::cerr << "Internal error: inconsistent file name counts"
-                      << std::endl;
+            std::cerr << "Internal error: inconsistent file name counts\n";
             return EXIT_FAILURE;
         }
 
@@ -353,7 +357,7 @@ int main(int argc, char *argv[])
         {
             if (mode != AESCryptMode::Undefined)
             {
-                std::cerr << "More than one mode was specified" << std::endl;
+                std::cerr << "More than one mode was specified\n";
                 return EXIT_FAILURE;
             }
 
@@ -364,7 +368,7 @@ int main(int argc, char *argv[])
         {
             if (mode != AESCryptMode::Undefined)
             {
-                std::cerr << "More than one mode was specified" << std::endl;
+                std::cerr << "More than one mode was specified\n";
                 return EXIT_FAILURE;
             }
 
@@ -372,7 +376,7 @@ int main(int argc, char *argv[])
             if (file_count > 0)
             {
                 std::cerr << "Cannot specify input files when generating a key"
-                          << std::endl;
+                          << "\n";
                 return EXIT_FAILURE;
             }
 
@@ -382,15 +386,14 @@ int main(int argc, char *argv[])
         if (mode == AESCryptMode::Undefined)
         {
             std::cerr << "Specify either encrypt (-e), decrypt (-d), or "
-                         "generate (-g) mode"
-                      << std::endl;
+                         "generate (-g) mode\n";
             return EXIT_FAILURE;
         }
 
         // If not generating a key, ensure input files were given
         if ((mode != AESCryptMode::KeyGenerate) && (file_count == 0))
         {
-            std::cerr << "No input files were given" << std::endl;
+            std::cerr << "No input files were given\n";
             return EXIT_FAILURE;
         }
 
@@ -401,7 +404,7 @@ int main(int argc, char *argv[])
             if (mode == AESCryptMode::KeyGenerate)
             {
                 std::cerr << "Cannot specify a password when generating a key"
-                          << std::endl;
+                          << "\n";
                 return EXIT_FAILURE;
             }
 
@@ -412,17 +415,18 @@ int main(int argc, char *argv[])
             // If the length is zero, that is invalid
             if (user_password.empty())
             {
-                std::cerr << "Password argument cannot be empty" << std::endl;
+                std::cerr << "Password argument cannot be empty\n";
                 return EXIT_FAILURE;
             }
 
             // Verify the string is valid UTF-8
-            bool valid_encoding = Terra::CharUtil::IsUTF8Valid(user_password);
+            const bool valid_encoding =
+                                Terra::CharUtil::IsUTF8Valid(user_password);
 
             // If the encoding is invalid, do not proceed
             if (!valid_encoding)
             {
-                std::cerr << "Password is not in UTF-8 format" << std::endl;
+                std::cerr << "Password is not in UTF-8 format\n";
                 return EXIT_FAILURE;
             }
 
@@ -437,7 +441,7 @@ int main(int argc, char *argv[])
             if (!password.empty())
             {
                 std::cerr << "Password and key file cannot both be specified"
-                          << std::endl;
+                          << "\n";
                 return EXIT_FAILURE;
             }
 
@@ -447,7 +451,7 @@ int main(int argc, char *argv[])
             // If the length is zero, that is invalid
             if (key_file.empty())
             {
-                std::cerr << "Key file argument cannot be empty" << std::endl;
+                std::cerr << "Key file argument cannot be empty\n";
                 return EXIT_FAILURE;
             }
 
@@ -455,8 +459,7 @@ int main(int argc, char *argv[])
             if ((key_file == "-") && (mode != AESCryptMode::KeyGenerate))
             {
                 std::cerr << "When encrypting or decrypting, the key file "
-                             "cannot be stdin"
-                          << std::endl;
+                             "cannot be stdin\n";
                 return EXIT_FAILURE;
             }
         }
@@ -468,7 +471,7 @@ int main(int argc, char *argv[])
             if (mode != AESCryptMode::KeyGenerate)
             {
                 std::cerr << "Key length only valid when generating a key file"
-                          << std::endl;
+                          << "\n";
                 return EXIT_FAILURE;
             }
 
@@ -484,8 +487,7 @@ int main(int argc, char *argv[])
             // Only valid when encrypting
             if (mode != AESCryptMode::Encrypt)
             {
-                std::cerr << "Iteration value valid only when encrypting"
-                          << std::endl;
+                std::cerr << "Iteration value valid only when encrypting\n";
             }
 
             options_parser.GetOptionValue("iterations",
@@ -501,8 +503,7 @@ int main(int argc, char *argv[])
             if (file_count > 1)
             {
                 std::cerr << "Output file cannot be specified when providing "
-                             "multiple input files"
-                          << std::endl;
+                             "multiple input files\n";
                 return EXIT_FAILURE;
             }
 
@@ -510,8 +511,7 @@ int main(int argc, char *argv[])
             if (mode == AESCryptMode::KeyGenerate)
             {
                 std::cerr << "Output file cannot be specified when generating "
-                             "a key file"
-                          << std::endl;
+                             "a key file\n";
                 return EXIT_FAILURE;
             }
 
@@ -521,7 +521,7 @@ int main(int argc, char *argv[])
             // Ensure the output file is not empty
             if (output_file.empty())
             {
-                std::cerr << "Empty output file name not allowed" << std::endl;
+                std::cerr << "Empty output file name not allowed\n";
                 return EXIT_FAILURE;
             }
 
@@ -535,8 +535,7 @@ int main(int argc, char *argv[])
             if (stdin_filenames_seen > 0)
             {
                 std::cerr << "Since stdin is used for input, an output "
-                             "filename must be specified (may be \"-\")"
-                          << std::endl;
+                             "filename must be specified (may be \"-\")\n";
                 return EXIT_FAILURE;
             }
         }
@@ -565,17 +564,17 @@ int main(int argc, char *argv[])
     }
     catch (const Terra::ProgramOptions::OptionsException &e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << e.what() << "\n";
         return EXIT_FAILURE;
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << e.what() << "\n";
         return EXIT_FAILURE;
     }
     catch (...)
     {
-        std::cerr << "Unknown error processing arguments" << std::endl;
+        std::cerr << "Unknown error processing arguments\n";
         return EXIT_FAILURE;
     }
 
@@ -586,13 +585,13 @@ int main(int argc, char *argv[])
         if (key_file.empty())
         {
             std::cerr << "To generate a key, specify the name of the key file"
-                      << std::endl;
+                      << "\n";
             return EXIT_FAILURE;
         }
 
         if (!GenerateKeyFile(logger, key_file, key_size))
         {
-            std::cerr << "Unable to generate the key file" << std::endl;
+            std::cerr << "Unable to generate the key file\n";
             return EXIT_FAILURE;
         }
 
@@ -608,7 +607,7 @@ int main(int argc, char *argv[])
         // If the password is empty, that is a problem
         if (password.empty())
         {
-            std::cerr << "Unable to get a key from the key file" << std::endl;
+            std::cerr << "Unable to get a key from the key file\n";
             return EXIT_FAILURE;
         }
     }
@@ -620,8 +619,7 @@ int main(int argc, char *argv[])
         if (using_stdout)
         {
             std::cerr << "On Windows, one cannot be prompted for a password if "
-                         "also writing to stdout"
-                      << std::endl;
+                         "also writing to stdout\n";
             return EXIT_FAILURE;
         }
 #endif
@@ -632,22 +630,22 @@ int main(int argc, char *argv[])
         switch (result)
         {
             case PasswordResult::UnspecifiedError:
-                std::cerr << "Failed to get a password" << std::endl;
+                std::cerr << "Failed to get a password\n";
                 break;
 
             case PasswordResult::Success:
                 break;
 
             case PasswordResult::Mismatch:
-                std::cerr << "Passwords do not match" << std::endl;
+                std::cerr << "Passwords do not match\n";
                 break;
 
             case PasswordResult::NoInput:
-                std::cerr << "No input received" << std::endl;
+                std::cerr << "No input received\n";
                 break;
 
             default:
-                std::cerr << "Failed to get a password" << std::endl;
+                std::cerr << "Failed to get a password\n";
                 break;
         }
 
@@ -657,7 +655,7 @@ int main(int argc, char *argv[])
         // If the password is empty, there was a problem
         if (user_password.empty())
         {
-            std::cerr << "Password is empty" << std::endl;
+            std::cerr << "Password is empty\n";
             return EXIT_FAILURE;
         }
 
@@ -669,10 +667,9 @@ int main(int argc, char *argv[])
     // Verify user license rights
     if (!Terra::ACLM::ValidateACLM())
     {
-        std::cerr << "A valid license is required to use AES Crypt. You may "
-                     "obtain a license by"
-                  << std::endl
-                  << "visiting https://www.aescrypt.com/." << std::endl;
+        std::cerr << "A valid license is required to use AES Crypt.\n"
+                  << "You may obtain a license by visiting "
+                  << "https://www.aescrypt.com/.\n";
         return EXIT_FAILURE;
     }
 #endif
@@ -688,7 +685,7 @@ int main(int argc, char *argv[])
             process_control.signal_terminate.wait(false);
 
             // Lock the mutex to signal waiting threads to terminate
-            std::lock_guard<std::mutex> lock(process_control.mutex);
+            const std::lock_guard<std::mutex> lock(process_control.mutex);
             process_control.terminate = true;
             process_control.cv.notify_all();
         });
@@ -698,38 +695,40 @@ int main(int argc, char *argv[])
         // If encrypting, do that now
         if (mode == AESCryptMode::Encrypt)
         {
+            const std::string created_by = std::string(Terra::Project_Name) +
+                                           " " +
+                                           std::string(Terra::Project_Version);
             // Create extensions vector to be inserted into stream header
             const std::vector<std::pair<std::string, std::string>> extensions =
             {
                 {
-                    "CREATED_BY",
-                    Terra::Project_Name + " " + Terra::Project_Version
+                    "CREATED_BY", created_by
                 }
             };
 
             // Encrypt files, disabling progress updates as appropriate
-            bool encrypt_result = EncryptFiles(logger,
-                                               process_control,
-                                               force,
-                                               (quiet || using_stdout),
-                                               password,
-                                               iterations,
-                                               filenames,
-                                               output_file,
-                                               extensions);
+            const bool encrypt_result = EncryptFiles(logger,
+                                                     process_control,
+                                                     force,
+                                                     (quiet || using_stdout),
+                                                     password,
+                                                     iterations,
+                                                     filenames,
+                                                     output_file,
+                                                     extensions);
 
             exit_status = (encrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
         }
         else
         {
             // Decrypt files, disabling progress updates as appropriate
-            auto decrypt_result = DecryptFiles(logger,
-                                               process_control,
-                                               force,
-                                               (quiet || using_stdout),
-                                               password,
-                                               filenames,
-                                               output_file);
+            const bool decrypt_result = DecryptFiles(logger,
+                                                     process_control,
+                                                     force,
+                                                     (quiet || using_stdout),
+                                                     password,
+                                                     filenames,
+                                                     output_file);
 
             exit_status = (decrypt_result ? EXIT_SUCCESS : EXIT_FAILURE);
         }

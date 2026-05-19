@@ -1,7 +1,7 @@
 /*
  *  password_prompt.cpp
  *
- *  Copyright (C) 2024, 2025
+ *  Copyright (C) 2024, 2025, 2026
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -17,7 +17,10 @@
  *      None.
  */
 
+#include <iostream>
 #include <cstdint>
+#include <utility>
+#include <memory>
 #ifdef _WIN32
 #define NOMINMAX
 #include <Windows.h>
@@ -28,9 +31,12 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/types.h>
 #endif
+#include <terra/logger/logger.h>
 #include "password_prompt.h"
 #include "error_string.h"
+#include "secure_containers.h"
 
 namespace
 {
@@ -292,9 +298,9 @@ std::pair<bool, bool> TurnOffEcho(const Terra::Logger::LoggerPointer &logger,
     }
 
     // Disable echo if it is on
-    if ((tty_attributes.c_lflag & ECHO) != 0)
+    if ((tty_attributes.c_lflag & static_cast<unsigned>(ECHO)) != 0)
     {
-        tty_attributes.c_lflag &= ~ECHO;
+        tty_attributes.c_lflag &= ~static_cast<unsigned>(ECHO);
         if (tcsetattr(fd, TCSANOW, &tty_attributes) == -1)
         {
             LogSystemError(logger, "Unable to set terminal attributes");
@@ -388,7 +394,7 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
     SecureU8String c(1,' ');
 
     // Open the TTY for reading / writing
-    int fd = open("/dev/tty", O_RDWR | O_CLOEXEC);
+    const int fd = open("/dev/tty", O_RDWR | O_CLOEXEC);
 
     // If there was an error, report and return
     if (fd == -1)
@@ -413,7 +419,7 @@ std::pair<PasswordResult, SecureU8String> ReadTerminalText(
     while (true)
     {
         // Read a single character
-        ssize_t result = read(fd, c.data(), 1);
+        const ssize_t result = read(fd, c.data(), 1);
 
         // If there was an error, then fail
         if (result == -1)
@@ -496,7 +502,7 @@ std::pair<PasswordResult, SecureU8String> GetUserPassword(
                             bool verify_input)
 {
     // Create a child logger
-    Terra::Logger::LoggerPointer logger =
+    const Terra::Logger::LoggerPointer logger =
         std::make_shared<Terra::Logger::Logger>(std::move(parent_logger),
                                                 "PMPT");
 

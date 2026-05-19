@@ -22,16 +22,18 @@
 #include <cstdint>
 #include <climits>
 #include <cstring>
-#include <algorithm>
 #include <span>
 #include <string>
 #include <utility>
 #include <array>
+#include <exception>
 #include <terra/random/random_generator.h>
 #include <terra/charutil/character_utilities.h>
+#include <terra/logger/logger.h>
 #include "key_file.h"
 #include "error_string.h"
 #include "password_convert.h"
+#include "secure_containers.h"
 
 // It is assumed a character is 8 bits
 static_assert(CHAR_BIT == 8);
@@ -126,7 +128,7 @@ bool GenerateKeyFile(Terra::Logger::LoggerPointer parent_logger,
     bool using_stdout = true;
 
     // Create a child logger
-    Terra::Logger::LoggerPointer logger =
+    const Terra::Logger::LoggerPointer logger =
         std::make_shared<Terra::Logger::Logger>(std::move(parent_logger),
                                                 "KGEN");
 
@@ -144,7 +146,7 @@ bool GenerateKeyFile(Terra::Logger::LoggerPointer parent_logger,
     {
         // Filenames should be in UTF-8 format, so form a UTF-8 string type
         // for use with open()
-        SecureU8String u8name(key_file.cbegin(), key_file.cend());
+        const SecureU8String u8name(key_file.cbegin(), key_file.cend());
 
         try
         {
@@ -221,7 +223,7 @@ bool GenerateKeyFile(Terra::Logger::LoggerPointer parent_logger,
     rng.GetRandomOctets(key);
 
     // Convert each to printable character (retains 6 bits of entropy)
-    for (auto &value : key) value = std::span(Key_Characters)[(value & 0x3f)];
+    for (auto &value : key) value = std::span(Key_Characters)[(value & 0x3fU)];
 
     // Output a stream of octets
     stream.write(reinterpret_cast<char *>(key.data()),
@@ -237,7 +239,7 @@ bool GenerateKeyFile(Terra::Logger::LoggerPointer parent_logger,
         {
             // Filenames should be in UTF-8 format, so form a UTF-8 string type
             // for use with open()
-            SecureU8String u8name(key_file.cbegin(), key_file.cend());
+            const SecureU8String u8name(key_file.cbegin(), key_file.cend());
 
             try
             {
@@ -307,7 +309,7 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
     bool using_stdin = true;
 
     // Create a child logger
-    Terra::Logger::LoggerPointer logger =
+    const Terra::Logger::LoggerPointer logger =
         std::make_shared<Terra::Logger::Logger>(std::move(parent_logger),
                                                 "KFLE");
 
@@ -318,7 +320,7 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
     {
         // Filenames should be in UTF-8 format, so form a UTF-8 string type
         // for use with open()
-        SecureU8String u8name(key_file.cbegin(), key_file.cend());
+        const SecureU8String u8name(key_file.cbegin(), key_file.cend());
 
         try
         {
@@ -418,7 +420,7 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
     }
 
     // UTF-16 data should have an even number of octets
-    if ((key.length() & 0x01) != 0)
+    if ((key.length() & 0x01U) != 0)
     {
         logger->error << "Key has an odd number of octets; UTF-16 data has "
                          "an even number of octets"
@@ -435,7 +437,7 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
     }
 
     // Inspect the first octet to determine endianness
-    bool little_endian = (static_cast<std::uint8_t>(key[0]) == 0xFF);
+    const bool little_endian = (static_cast<std::uint8_t>(key[0]) == 0xFF);
 
     // Strip off the BOM
     key.erase(0, 2);

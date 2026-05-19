@@ -1,7 +1,7 @@
 /*
  *  password_prompt.h
  *
- *  Copyright (C) 2024, 2025
+ *  Copyright (C) 2024, 2025, 2026
  *  Terrapane Corporation
  *  All Rights Reserved
  *
@@ -19,11 +19,13 @@
 #pragma once
 
 #include <utility>
+#include <cstdint>
+#include <string>
 #include <terra/logger/logger.h>
 #include "secure_containers.h"
 
 // Define the possible password-related errors
-enum class PasswordResult
+enum class PasswordResult : std::uint8_t
 {
     UnspecifiedError,
     Success,

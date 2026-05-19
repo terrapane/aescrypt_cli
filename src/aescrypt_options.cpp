@@ -18,13 +18,12 @@
  */
 
 #include <iostream>
-#include <utility>
-#include <stdexcept>
-#include <cstddef>
+#include <exception>
 #ifdef _WIN32
 #include <terra/charutil/character_utilities.h>
 #include "secure_containers.h"
 #endif
+#include <terra/program_options/program_options.h>
 #include "aescrypt_options.h"
 
 namespace Terra
@@ -55,8 +54,10 @@ namespace
  *  Comments:
  *      None.
  */
+// NOLINTBEGIN(*-avoid-c-arrays)
 SecureVector<SecureString> ConvertArguments(const int argc,
                                             const wchar_t *const argv[])
+// NOLINTEND(*-avoid-c-arrays)
 {
     // Ensure Windows is using two octet wchar_t values
     static_assert(sizeof(wchar_t) == 2,
@@ -67,7 +68,7 @@ SecureVector<SecureString> ConvertArguments(const int argc,
     for (std::size_t i = 0; i < argc; i++)
     {
         // How many octets are in the string?
-        auto arg_length = wcslen(argv[i]) * sizeof(wchar_t);
+        const auto arg_length = wcslen(argv[i]) * sizeof(wchar_t);
 
         // If the length is zero, just push an empty string onto the vector
         if (arg_length == 0)
@@ -123,6 +124,7 @@ SecureVector<SecureString> ConvertArguments(const int argc,
 bool SetOptions(Terra::ProgramOptions::Parser &parser) noexcept
 {
     // clang-format off
+    // NOLINTBEGIN(modernize-use-designated-initializers)
     const Terra::ProgramOptions::Options options =
     {
     //    Name        Short  Long          Multi   Argument
@@ -141,6 +143,7 @@ bool SetOptions(Terra::ProgramOptions::Parser &parser) noexcept
         { "quiet",      "q", "quiet",      false,  false },
         { "version",    "v", "version",    false,  false }
     };
+    // NOLINTEND(modernize-use-designated-initializers)
     // clang-format on
 
     // Configure the programs option object with the above options specification
@@ -150,22 +153,19 @@ bool SetOptions(Terra::ProgramOptions::Parser &parser) noexcept
     }
     catch (const Terra::ProgramOptions::SpecificationException &e)
     {
-        std::cerr << "Program options exception error: "
-                  << e.what()
-                  << std::endl;
+        std::cerr << "Program options exception error: " << e.what() << "\n";
         return false;
     }
     catch (const std::exception &e)
     {
         std::cerr << "Unknown error parsing program options: "
                   << e.what()
-                  << std::endl;
+                  << "\n";
         return false;
     }
     catch (...)
     {
-        std::cerr << "Unknown error parsing program options"
-                  << std::endl;
+        std::cerr << "Unknown error parsing program options" << "\n";
         return false;
     }
 
@@ -200,11 +200,11 @@ bool SetOptions(Terra::ProgramOptions::Parser &parser) noexcept
 #ifdef _WIN32
 bool ParseOptions(Terra::ProgramOptions::Parser &parser,
                   const int argc,
-                  const wchar_t *const argv[])
+                  const wchar_t *const argv[]) // NOLINT(*-avoid-c-arrays)
 #else
 bool ParseOptions(Terra::ProgramOptions::Parser &parser,
                   const int argc,
-                  const char *const argv[])
+                  const char *const argv[]) // NOLINT(*-avoid-c-arrays)
 #endif
 {
     // Set the program options
@@ -224,20 +224,19 @@ bool ParseOptions(Terra::ProgramOptions::Parser &parser,
     }
     catch (const Terra::ProgramOptions::OptionsException &e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << e.what() << "\n";
         return false;
     }
     catch (const std::exception &e)
     {
         std::cerr << "Unexpected error parsing program options: "
                   << e.what()
-                  << std::endl;
+                  << "\n";
         return false;
     }
     catch (...)
     {
-        std::cerr << "Unexpected error parsing program options"
-                  << std::endl;
+        std::cerr << "Unexpected error parsing program options\n";
         return false;
     }
 

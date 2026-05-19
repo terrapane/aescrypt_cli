@@ -22,7 +22,15 @@
 #include <mutex>
 #include <utility>
 #include <cstddef>
+#include <string>
+#include <vector>
+#include <memory>
+#include <exception>
 #include <terra/aescrypt/engine/decryptor.h>
+#include <terra/conio/progress_meter.h>
+#include <terra/logger/logger.h>
+#include "process_control.h"
+#include "secure_containers.h"
 #include "decrypt_files.h"
 #include "error_string.h"
 #include "aescrypt.h"
@@ -171,7 +179,7 @@ bool DecryptStream(
                 update_interval);
 
             // Lock the mutex to assign result
-            std::lock_guard<std::mutex> lock(process_control.mutex);
+            const std::lock_guard<std::mutex> lock(process_control.mutex);
             decryption_complete = true;
             process_control.cv.notify_all();
         });
@@ -199,7 +207,7 @@ bool DecryptStream(
     // If the process should terminate, can decryption if still working
     if (cancel_decryption)
     {
-        std::cerr << "Request cancelled; cleaning up..." << std::endl;
+        std::cerr << "Request cancelled; cleaning up...\n";
         decryptor.Cancel();
     }
 
@@ -210,8 +218,7 @@ bool DecryptStream(
     if ((decrypt_result != DecryptResult::Success) &&
         (decrypt_result != DecryptResult::DecryptionCancelled))
     {
-        std::cerr << "Error decrypting file: " << decrypt_result
-                  << std::endl;
+        std::cerr << "Error decrypting file: " << decrypt_result << "\n";
         return false;
     }
 
@@ -273,14 +280,14 @@ bool DecryptFiles(
     const SecureString &output_file)
 {
     SecureString out_file;
-    bool stdout_used = (output_file == "-");
+    const bool stdout_used = (output_file == "-");
 
     // Secure buffer for file I/O
     SecureVector<char> read_buffer(Buffered_IO_Size, 0);
     SecureVector<char> write_buffer(Buffered_IO_Size, 0);
 
     // Create a child logger
-    Terra::Logger::LoggerPointer logger =
+    const Terra::Logger::LoggerPointer logger =
         std::make_shared<Terra::Logger::Logger>(std::move(parent_logger),
                                                 "FILE");
 
@@ -297,7 +304,7 @@ bool DecryptFiles(
                                 << in_file << std::flush;
                     std::cerr << "Input file does not end with .aes and no "
                                  "output file was specified: "
-                              << in_file << std::endl;
+                              << in_file << "\n";
                     return false;
                 }
             }
@@ -307,8 +314,7 @@ bool DecryptFiles(
                                  "has .aes extension: "
                               << e.what() << std::flush;
                 std::cerr << "Exception trying to determine if filename has "
-                             ".aes extension"
-                          << std::endl;
+                             ".aes extension\n";
                 return false;
             }
         }
@@ -331,58 +337,58 @@ bool DecryptFiles(
         {
             // Filenames should be in UTF-8 format, so form a UTF-8 string type
             // for use with open() and file_size()
-            SecureU8String u8name(in_file.cbegin(), in_file.cend());
+            const SecureU8String u8name(in_file.cbegin(), in_file.cend());
 
             try
             {
                 // Get the input file status
-                std::filesystem::file_status file_status =
+                const std::filesystem::file_status file_status =
                     std::filesystem::status(std::filesystem::path(u8name));
 
                 // If the input file does not exist, report an error
                 if (!std::filesystem::exists(file_status))
                 {
-                    Terra::SecUtil::SecureString error_text;
+                    SecureString error_text;
                     error_text = "Input file does not exist: " + in_file;
                     logger->error << error_text << std::flush;
-                    std::cerr << error_text << std::endl;
+                    std::cerr << error_text << "\n";
                     return false;
                 }
 
                 // The specified input file must be a regular file
                 if (!std::filesystem::is_regular_file(file_status))
                 {
-                    Terra::SecUtil::SecureString error_text;
+                    SecureString error_text;
                     error_text = "Input name is not a file: " + in_file;
                     logger->error << error_text << std::flush;
-                    std::cerr << error_text << std::endl;
+                    std::cerr << error_text << "\n";
                     return false;
                 }
             }
             catch (const std::filesystem::filesystem_error &e)
             {
-                Terra::SecUtil::SecureString error_text;
+                SecureString error_text;
                 error_text = "Error checking input file: " + in_file +
                              " (file system err=" + e.what() + ")";
                 logger->error << error_text << std::flush;
-                std::cerr << error_text << std::endl;
+                std::cerr << error_text << "\n";
                 return false;
             }
             catch (const std::exception &e)
             {
-                Terra::SecUtil::SecureString error_text;
+                SecureString error_text;
                 error_text = "Error checking input file: " + in_file +
                              " (err=" + e.what() + ")";
                 logger->error << error_text << std::flush;
-                std::cerr << error_text << std::endl;
+                std::cerr << error_text << "\n";
                 return false;
             }
             catch (...)
             {
-                Terra::SecUtil::SecureString error_text;
+                SecureString error_text;
                 error_text = "Error checking input file: " + in_file;
                 logger->error << error_text << std::flush;
-                std::cerr << error_text << std::endl;
+                std::cerr << error_text << "\n";
                 return false;
             }
 
@@ -435,8 +441,7 @@ bool DecryptFiles(
                 LogSystemError(logger,
                                std::string("Unable to open input file: ") +
                                    static_cast<std::string>(in_file));
-                std::cerr << "Unable to open input file: " << in_file
-                          << std::endl;
+                std::cerr << "Unable to open input file: " << in_file << "\n";
                 return false;
             }
 
@@ -451,8 +456,7 @@ bool DecryptFiles(
                 if (out_file.empty())
                 {
                     std::cerr << "To decrypt a file named .aes, one must "
-                                 "specify an output file"
-                              << std::endl;
+                                 "specify an output file\n";
                     return false;
                 }
             }
@@ -479,19 +483,19 @@ bool DecryptFiles(
         {
             // Filenames should be in UTF-8 format, so form a UTF-8 string type
             // for use with open()
-            SecureU8String u8name(out_file.cbegin(), out_file.cend());
+            const SecureU8String u8name(out_file.cbegin(), out_file.cend());
 
             try
             {
                 // Get the file status
-                std::filesystem::file_status file_status =
+                const std::filesystem::file_status file_status =
                     std::filesystem::status(std::filesystem::path(u8name));
 
                 // Is the output name a directory?
                 if (std::filesystem::is_directory(file_status))
                 {
                     std::cerr << "Target output cannot be a directory: "
-                              << out_file << std::endl;
+                              << out_file << "\n";
                     return false;
                 }
 
@@ -507,7 +511,7 @@ bool DecryptFiles(
                 if (!force && std::filesystem::is_regular_file(file_status))
                 {
                     std::cerr << "Target output file already exists: "
-                              << out_file << std::endl;
+                              << out_file << "\n";
                     return false;
                 }
             }
@@ -516,8 +520,7 @@ bool DecryptFiles(
                 logger->error << "Exception checking output file existence: "
                               << out_file << " (file system err=" << e.what()
                               << ")" << std::flush;
-                std::cerr << "Unable to open output file: " << out_file
-                          << std::endl;
+                std::cerr << "Unable to open output file: " << out_file << "\n";
                 return false;
             }
             catch (const std::exception &e)
@@ -525,16 +528,14 @@ bool DecryptFiles(
                 logger->error << "Exception checking output file existence: "
                               << out_file << " (err=" << e.what() << ")"
                               << std::flush;
-                std::cerr << "Unable to open output file: " << out_file
-                          << std::endl;
+                std::cerr << "Unable to open output file: " << out_file << "\n";
                 return false;
             }
             catch (...)
             {
                 logger->error << "Exception checking output file existence: "
                               << out_file << std::flush;
-                std::cerr << "Unable to open output file: " << out_file
-                          << std::endl;
+                std::cerr << "Unable to open output file: " << out_file << "\n";
                 return false;
             }
 
@@ -565,12 +566,11 @@ bool DecryptFiles(
                 LogSystemError(logger,
                                std::string("Unable to open output file: ") +
                                    static_cast<std::string>(out_file));
-                std::cerr << "Unable to open output file: " << out_file
-                          << std::endl;
+                std::cerr << "Unable to open output file: " << out_file << "\n";
                 return false;
             }
 
-            if (!quiet) std::cout << "Decrypting: " << in_file << std::endl;
+            if (!quiet) std::cout << "Decrypting: " << in_file << "\n";
         }
 
         // Assign the output file stream
@@ -582,13 +582,13 @@ bool DecryptFiles(
             static_cast<std::streamsize>(write_buffer.size()));
 
         // Decrypt the input stream to the output stream
-        bool result = DecryptStream(logger,
-                                    process_control,
-                                    (quiet || stdout_used),
-                                    password,
-                                    file_size,
-                                    istream,
-                                    ostream);
+        const bool result = DecryptStream(logger,
+                                          process_control,
+                                          (quiet || stdout_used),
+                                          password,
+                                          file_size,
+                                          istream,
+                                          ostream);
 
         // Close any open files; there may be delay in closing the output
         // file if it is large and transmission is over a network
@@ -607,7 +607,7 @@ bool DecryptFiles(
             {
                 // Filenames should be in UTF-8 format, so form a UTF-8 string
                 // type use with remove()
-                SecureU8String u8name(out_file.cbegin(), out_file.cend());
+                const SecureU8String u8name(out_file.cbegin(), out_file.cend());
 
                 try
                 {
@@ -618,20 +618,20 @@ bool DecryptFiles(
                     logger->error << "Unable to remove output file: "
                                   << out_file << " (file system err="
                                   << e.what() << ")" << std::flush;
-                    std::cerr << "Unable to remove output file" << std::endl;
+                    std::cerr << "Unable to remove output file\n";
                 }
                 catch (const std::exception &e)
                 {
                     logger->error << "Unable to remove output file: "
                                   << out_file << " (err=" << e.what() << ")"
                                   << std::flush;
-                    std::cerr << "Unable to remove output file" << std::endl;
+                    std::cerr << "Unable to remove output file\n";
                 }
                 catch (...)
                 {
                     logger->error << "Unable to remove output file: "
                                   << out_file << std::flush;
-                    std::cerr << "Unable to remove output file" << std::endl;
+                    std::cerr << "Unable to remove output file\n";
                 }
             }
 

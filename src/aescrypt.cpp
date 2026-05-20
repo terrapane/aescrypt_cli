@@ -40,6 +40,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <terra/conio/ansi_capable.h>
 #else
 #include <clocale>
 #include <langinfo.h>

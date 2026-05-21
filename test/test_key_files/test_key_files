@@ -47,8 +47,9 @@ cd $( dirname "${BASH_SOURCE[0]}" ) || exit 1
     echo Error with UTF-8 Unicode key decrypting v2 file
     exit 1
 }
-cat keys/unicode_utf8.key | "$AESCRYPT" -q -d -k - \
-            -o /dev/null encrypted/sample_unicode_v2.txt.aes 2>/dev/null || {
+cat keys/unicode_utf8.key | \
+    "$AESCRYPT" -q -d -k - -o /dev/null \
+                encrypted/sample_unicode_v2.txt.aes 2>/dev/null || {
     echo Error with UTF-8 Unicode key decrypting v2 file
     exit 1
 }
@@ -63,8 +64,9 @@ cat keys/unicode_utf8.key | "$AESCRYPT" -q -d -k - \
     echo Error with UTF-8 Unicode key decrypting v3 file
     exit 1
 }
-cat keys/unicode_utf8.key | "$AESCRYPT" -q -d -k - \
-            -o /dev/null encrypted/sample_unicode_v3.txt.aes 2>/dev/null || {
+cat keys/unicode_utf8.key | \
+    "$AESCRYPT" -q -d -k - -o /dev/null \
+                encrypted/sample_unicode_v3.txt.aes 2>/dev/null || {
     echo Error with UTF-8 Unicode key decrypting v3 file
     exit 1
 }

@@ -315,7 +315,7 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
 
     logger->info << "Preparing to read key file" << std::flush;
 
-    // Is the key file coming from stdin?
+    // Is the key an actual file (i.e., not stdin)?
     if (key_file != "-")
     {
         // Filenames should be in UTF-8 format, so form a UTF-8 string type

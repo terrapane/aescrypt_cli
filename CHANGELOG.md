@@ -2,6 +2,7 @@
 
 v4.6.0
 
+- Allow stdin to be used for key file input
 - Restructure the aescrypt.cpp file to move some code to other modules,
   including version, usage, and options processing
 - Changes the way in which signal notify the rest of the code about events

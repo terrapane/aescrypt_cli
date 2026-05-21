@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
             for (auto &file : temp_names)
             {
                 // Check if this filename is "-"
-                if (file == std::string("-")) stdin_filenames_seen++;
+                if (file == "-") stdin_filenames_seen++;
 
                 // Store name in a secure container
                 filenames.push_back(static_cast<SecureString>(file));
@@ -401,11 +401,10 @@ int main(int argc, char *argv[])
         // Was a password specified?
         if (options_parser.OptionGiven("password"))
         {
-            // Password cannot be provided when generating keys
+            // Password cannot be provided if generating keys
             if (mode == AESCryptMode::KeyGenerate)
             {
-                std::cerr << "Cannot specify a password when generating a key"
-                          << "\n";
+                std::cerr << "Cannot specify a password if generating a key\n";
                 return EXIT_FAILURE;
             }
 
@@ -441,8 +440,7 @@ int main(int argc, char *argv[])
             // Ensure a password is not also specified
             if (!password.empty())
             {
-                std::cerr << "Password and key file cannot both be specified"
-                          << "\n";
+                std::cerr << "Password and key file cannot both be specified\n";
                 return EXIT_FAILURE;
             }
 
@@ -456,11 +454,11 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
             }
 
-            // The keyfile cannot cannot be stdout when encrypting or decrypting
-            if ((key_file == "-") && (mode != AESCryptMode::KeyGenerate))
+            // Ensure "-" is not used for both key input and file input
+            if ((key_file == "-") && (stdin_filenames_seen > 0))
             {
-                std::cerr << "When encrypting or decrypting, the key file "
-                             "cannot be stdin\n";
+                std::cerr << "stdin (\"-\") cannot be specified for both the "
+                          << "key file and an input file\n";
                 return EXIT_FAILURE;
             }
         }
@@ -527,7 +525,7 @@ int main(int argc, char *argv[])
             }
 
             // If the output file is stdout, take note
-            if (output_file == SecureString("-")) using_stdout = true;
+            if (output_file == "-") using_stdout = true;
         }
         else
         {
@@ -620,7 +618,7 @@ int main(int argc, char *argv[])
         if (using_stdout)
         {
             std::cerr << "On Windows, one cannot be prompted for a password if "
-                         "also writing to stdout\n";
+                         "also writing to stdout (\"-\")\n";
             return EXIT_FAILURE;
         }
 #endif

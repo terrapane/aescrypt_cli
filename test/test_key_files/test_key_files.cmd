@@ -79,8 +79,8 @@ if %ERRORLEVEL% neq 0 (
     set RESULT=1
     goto :EXIT_RESULT
 )
-type keys\unicode_utf8.key | ^
-    "%AESCRYPT%" -q -d -k - -o - encrypted\sample_unicode_v2.txt.aes >NUL 2>NUL
+type keys\unicode_utf8.key | "%AESCRYPT%" -q -d -k - -o - ^
+    encrypted\sample_unicode_v2.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-8 Unicode key decrypting v2 file
     set RESULT=1
@@ -101,8 +101,8 @@ if %ERRORLEVEL% neq 0 (
     set RESULT=1
     @rem goto :EXIT_RESULT
 )
-type keys\unicode_utf8.key | ^
-    "%AESCRYPT%" -q -d -k - -o - encrypted\sample_unicode_v3.txt.aes >NUL 2>NUL
+type keys\unicode_utf8.key | "%AESCRYPT%" -q -d -k - -o - ^
+    encrypted\sample_unicode_v3.txt.aes >NUL 2>NUL
 if %ERRORLEVEL% neq 0 (
     echo Error with UTF-8 Unicode key decrypting v3 file
     set RESULT=1

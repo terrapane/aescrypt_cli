@@ -1,6 +1,3 @@
-# Include standard installation directory variables
-include(GNUInstallDirs)
-
 # Build a version number into the binary library
 configure_file(version.h.in version.h @ONLY)
 
@@ -98,8 +95,4 @@ endif()
 # Install the executable and man page, as appropriate
 if(aescrypt_cli_INSTALL)
     install(TARGETS aescrypt RUNTIME)
-    if(NOT WIN32)
-        install(FILES ${PROJECT_SOURCE_DIR}/man/aescrypt.1.gz DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
-        install(FILES ${PROJECT_SOURCE_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/${CMAKE_PROJECT_NAME})
-    endif()
 endif()

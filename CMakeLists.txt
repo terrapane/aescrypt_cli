@@ -38,12 +38,6 @@ option(aescrypt_ENABLE_LICENSE_MODULE "Enable license module (disable for privat
 # Set MSVC-specific settings
 include(cmake/msvc_options.cmake)
 
-# Set the target deployment version to macOS 10.15; this minimum version will
-# be updated in the future when newer system dependencies become desired
-if(APPLE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
-endif()
-
 # Ensure testing is enabled to surface tests in dependencies
 include(CTest)
 

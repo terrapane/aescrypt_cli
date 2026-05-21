@@ -1,5 +1,7 @@
 # This file facilitates creation of package files for OS installation
-if(aescrypt_cli_INSTALL AND (UNIX AND NOT APPLE))
+if(aescrypt_cli_INSTALL AND (UNIX OR APPLE OR WIN32))
+    # Include standard installation directory variables
+    include(GNUInstallDirs)
     include(InstallRequiredSystemLibraries)
     set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "AES Crypt CLI")
@@ -41,12 +43,22 @@ if(aescrypt_cli_INSTALL AND (UNIX AND NOT APPLE))
     endif()
     include(CPack)
 
-    # Create the metainfo file and instal it
-    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/description.txt" DESCRIPTION_TEXT)
-    string(REPLACE ";" "\\;" DESCRIPTION_TEXT "${DESCRIPTION_TEXT}")
-    string(REGEX REPLACE "\n$" "" DESCRIPTION_TEXT "${DESCRIPTION_TEXT}")
-    configure_file(metainfo.xml.in com.terrapane.${PROJECT_NAME}.metainfo.xml @ONLY)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/com.terrapane.${PROJECT_NAME}.metainfo.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications/)
+    if(UNIX AND NOT APPLE)
+        # Create the metainfo file and instal it
+        file(READ "${CMAKE_CURRENT_SOURCE_DIR}/description.txt" DESCRIPTION_TEXT)
+        string(REPLACE ";" "\\;" DESCRIPTION_TEXT "${DESCRIPTION_TEXT}")
+        string(REGEX REPLACE "\n$" "" DESCRIPTION_TEXT "${DESCRIPTION_TEXT}")
+        configure_file(metainfo.xml.in com.terrapane.${PROJECT_NAME}.metainfo.xml @ONLY)
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/com.terrapane.${PROJECT_NAME}.metainfo.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications/)
+    endif()
+
+    # Install the executable and man page, as appropriate
+    if(NOT WIN32)
+        install(FILES ${PROJECT_SOURCE_DIR}/man/aescrypt.1.gz DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+    endif()
+    if(UNIX AND NOT APPLE)
+        install(FILES ${PROJECT_SOURCE_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/${CMAKE_PROJECT_NAME})
+    endif()
 
     # Note the dependency so that the description text is never out-of-sync
     set_property(

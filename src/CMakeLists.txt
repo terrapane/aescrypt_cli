@@ -92,7 +92,15 @@ if(aescrypt_cli_CLANG_TIDY)
     endif()
 endif()
 
-# Install the executable and man page, as appropriate
+# Install the executable, man page, and license file as appropriate
 if(aescrypt_cli_INSTALL)
+    # Include standard installation directory variables
+    include(GNUInstallDirs)
     install(TARGETS aescrypt RUNTIME)
+    if(NOT WIN32)
+        install(FILES ${PROJECT_SOURCE_DIR}/man/aescrypt.1.gz DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+    endif()
+    if(UNIX AND NOT APPLE)
+        install(FILES ${PROJECT_SOURCE_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/${CMAKE_PROJECT_NAME})
+    endif()
 endif()

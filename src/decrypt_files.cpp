@@ -192,11 +192,12 @@ bool DecryptStream(
                             [&]() -> bool
                             {
                                 return decryption_complete ||
-                                       process_control.terminate;
+                                       process_control.IsMainTerminateSet();
                             });
 
     // If the process should terminate, cancel decryption if still going
-    cancel_decryption = process_control.terminate && (!decryption_complete);
+    cancel_decryption =
+        process_control.IsMainTerminateSet() && (!decryption_complete);
 
     // Unlock the mutex
     lock.unlock();
@@ -639,7 +640,7 @@ bool DecryptFiles(
         }
 
         // If termination requested, stop processing files and return
-        if (process_control.terminate) return false;
+        if (process_control.IsMainTerminateSet()) return false;
     }
 
     logger->info << "Decryption process complete" << std::flush;

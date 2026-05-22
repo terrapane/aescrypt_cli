@@ -160,11 +160,12 @@ bool EncryptStream(
                             [&]() -> bool
                             {
                                 return encryption_complete ||
-                                       process_control.terminate;
+                                       process_control.IsMainTerminateSet();
                             });
 
     // If the process should terminate, cancel encrytion if still going
-    cancel_encryption = process_control.terminate && (!encryption_complete);
+    cancel_encryption =
+        process_control.IsMainTerminateSet() && (!encryption_complete);
 
     // Unlock the mutex
     lock.unlock();
@@ -585,7 +586,7 @@ bool EncryptFiles(
         }
 
         // If termination requested, stop processing files and return
-        if (process_control.terminate) return false;
+        if (process_control.IsMainTerminateSet()) return false;
     }
 
     logger->info << "Encryption process complete" << std::flush;

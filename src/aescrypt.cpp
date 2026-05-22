@@ -123,12 +123,8 @@ void SignalHandler(int signal_number)
 
     // NOLINTEND(misc-include-cleaner)
 
-    // If terminating, set the flag and notify all waiting threads
-    if (terminate)
-    {
-        process_control.signal_terminate.store(true);
-        process_control.signal_terminate.notify_all();
-    }
+    // If terminating, set the termination flag associated with signals
+    if (terminate) process_control.SetSignalTerminate();
 }
 
 /*
@@ -681,11 +677,14 @@ int main(int argc, char *argv[])
         [&]()
         {
             // Wait for termination signal
-            process_control.signal_terminate.wait(false);
+            while (!process_control.IsSignalTerminateSet())
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(150));
+            }
 
             // Lock the mutex to signal waiting threads to terminate
             const std::lock_guard<std::mutex> lock(process_control.mutex);
-            process_control.terminate = true;
+            process_control.SetMainTerminate();
             process_control.cv.notify_all();
         });
 
@@ -734,21 +733,22 @@ int main(int argc, char *argv[])
     }
     catch (const std::exception &e)
     {
-        logger->critical << "Exception caught in main: " << e.what();
+        logger->critical << "Exception caught in main: "
+                         << e.what()
+                         << std::flush;
         std::cerr << "Failed due to unhandled exception caught in main: "
                   << e.what();
         exit_status = EXIT_FAILURE;
     }
     catch (...)
     {
-        logger->critical << "Unknown exception caught in main";
+        logger->critical << "Unknown exception caught in main" << std::flush;
         std::cerr << "Unknown exception caught in main; exiting";
         exit_status = EXIT_FAILURE;
     }
 
     // Wait for the signal notification thread to exit
-    process_control.signal_terminate.store(true);
-    process_control.signal_terminate.notify_all();
+    process_control.SetSignalTerminate();
     signal_notification.join();
 
     return exit_status;

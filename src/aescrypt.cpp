@@ -19,7 +19,6 @@
 
 #include <iostream>
 #include <csignal>
-#include <atomic>
 #include <utility>
 #include <cstdint>
 #include <cstddef>
@@ -33,6 +32,7 @@
 #include <exception>
 #include <thread>
 #include <mutex>
+#include <chrono>
 #ifdef _WIN32
 #define NOMINMAX
 #include <Windows.h>

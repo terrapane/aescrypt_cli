@@ -17,10 +17,6 @@
  *      None.
  */
 
-#include <iostream>
-#include <cstdint>
-#include <utility>
-#include <memory>
 #ifdef _WIN32
 #define NOMINMAX
 #define WIN32_NO_STATUS
@@ -34,8 +30,11 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
-#include <sys/types.h>
 #endif
+#include <cstdint>
+#include <utility>
+#include <memory>
+#include <ostream>
 #include <terra/logger/logger.h>
 #include "password_prompt.h"
 #include "error_string.h"

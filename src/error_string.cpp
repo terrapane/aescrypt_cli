@@ -16,13 +16,13 @@
  *      None.
  */
 
-#include <iostream>
 #if defined(HAVE_STRERROR_R) || defined(HAVE_STRERROR_S)
 #include <array>
 #endif
 #include <string>
 #include <cstring>
 #include <cerrno>
+#include <ostream>
 #include <terra/logger/logger.h>
 #include "error_string.h"
 

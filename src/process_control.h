@@ -44,7 +44,7 @@ class ProcessControl
         void SetMainTerminate() { terminate = true; }
 
         // Check to see if the terminate flag is set
-        bool IsMainTerminateSet() { return terminate; }
+        bool IsMainTerminateSet() const { return terminate; }
 
         // Used for thread synchronization
         std::condition_variable cv;

@@ -11,6 +11,9 @@ if(MSVC)
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
     endif()
 
+    # Reduce the footprint of Windows APIs pulled into the build process
+    add_compile_definitions(WIN32_LEAN_AND_MEAN)
+
     # Set global compiler options for Release builds
     add_compile_options(
         $<$<CONFIG:Release>:/GL>    # Whole program optimization

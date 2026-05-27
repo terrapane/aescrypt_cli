@@ -23,7 +23,10 @@
 #include <memory>
 #ifdef _WIN32
 #define NOMINMAX
+#define WIN32_NO_STATUS
 #include <Windows.h>
+#include <winternl.h>
+#include <ntstatus.h>
 #include <stdlib.h>
 #include "password_convert.h"
 #include <span>

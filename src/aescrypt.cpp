@@ -573,6 +573,17 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+#ifdef AESCRYPT_ENABLE_LICENSE_MODULE
+    // Verify user license rights
+    if (!AESCRYPT_LICENSE_VALID)
+    {
+        std::cerr << "A valid license is required to use AES Crypt.\n"
+                  << "You may obtain a license by visiting "
+                  << "https://www.aescrypt.com/.\n";
+        return EXIT_FAILURE;
+    }
+#endif
+
     // If generating a key file, do that now
     if (mode == AESCryptMode::KeyGenerate)
     {
@@ -657,17 +668,6 @@ int main(int argc, char *argv[])
         // Copy the user-provided password into a UTF-8 string type
         password = std::move(user_password);
     }
-
-#ifdef AESCRYPT_ENABLE_LICENSE_MODULE
-    // Verify user license rights
-    if (!Terra::ACLM::ValidateACLM())
-    {
-        std::cerr << "A valid license is required to use AES Crypt.\n"
-                  << "You may obtain a license by visiting "
-                  << "https://www.aescrypt.com/.\n";
-        return EXIT_FAILURE;
-    }
-#endif
 
     // Install signal handlers to ensure proper cleanup if user aborts
     InstallSignalHandlers();

@@ -270,12 +270,9 @@ int main(int argc, char *argv[])
         const std::string encoding = nl_langinfo(CODESET);
         if ((encoding != "UTF-8"))
         {
-            std::cerr << "Warning: Your locale is set to '"
-                      << encoding
-                      << "', but 'UTF-8' required for Unicode.  Thus, do not"
-                      << "\n"
-                      << "         "
-                      << "use passwords with non-ASCII characters."
+            std::cerr << "Warning: Your locale is set to '" << encoding
+                      << "', but 'UTF-8' required for Unicode.\n"
+                      << "Thus, do not use passwords with non-ASCII characters."
                       << "\n";
         }
     }

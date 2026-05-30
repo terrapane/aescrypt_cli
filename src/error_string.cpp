@@ -16,7 +16,7 @@
  *      None.
  */
 
-#if defined(HAVE_STRERROR_R) || defined(HAVE_STRERROR_S)
+#if defined(HAVE_POSIX_STRERROR_R) || defined(HAVE_STRERROR_S)
 #include <array>
 #endif
 #include <string>

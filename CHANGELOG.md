@@ -8,6 +8,7 @@ v4.6.0
 - Changes the way in which signal notify the rest of the code about events
 - Updated man page
 - CMake configuration changes
+- Increased default KDF iterations to 600,000
 - Introduced metainfo.xml file
 
 v4.5.0

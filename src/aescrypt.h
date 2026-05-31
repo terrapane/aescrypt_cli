@@ -24,7 +24,7 @@
 // Define the default number of KDF iterations; these MUST align with the
 // values in AES Crypt Engine's "engine_common.h" declarations
 constexpr std::uint32_t KDF_Min_Iterations = 1;
-constexpr std::uint32_t KDF_Iterations = 300'000;
+constexpr std::uint32_t KDF_Iterations = 600'000;
 constexpr std::uint32_t KDF_Max_Iterations = 5'000'000;
 
 // Define the default key file size in octets; AES uses a max key length

@@ -109,7 +109,7 @@ if no key size is specified).
 AES Crypt uses that AES algorithm to encrypt files using a 256-bit key and
 a password.  Passwords should be as strong as possible.  To make them
 more difficult to guess, AES Crypt used a Key Derivation Function (KDF)
-approved by FIPS SP 800-132 (namely PBKDF2 with HMAC-SHA512 using 300,000
+approved by FIPS SP 800-132 (namely PBKDF2 with HMAC-SHA512 using 600,000
 iterations by default).  Deriving the key from a password takes a little time,
 and that is intentional so as to make it more difficult to brute-force attack
 an encrypted file.
@@ -128,7 +128,8 @@ aescrypt -e -k key_file -o output.aes input.aes
 
 The `-p` option allows one to specify a password.  Alternatively, one may
 specify a key file using the `-k` option.  If neither are given, AES Crypt
-will prompt the user for a password.
+will prompt the user for a password.  (Note that one may also pass the password
+to AES Crypt via stdin if using `-k -` as the key file.)
 
 The `-o` flag allows one to specify a specific output file.  By default,
 AES Crypt will create an encrypted file with the same name as the input file,

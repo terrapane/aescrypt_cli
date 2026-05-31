@@ -58,7 +58,7 @@ MODE:
 
 FUNCTIONAL:
     -f, --force      [force     ] Force overwriting output file if it exists
-    -i, --iterations [iterations] Number of KDF iterations (default is 300000)
+    -i, --iterations [iterations] Number of KDF iterations (default is 600000)
     -k, --keyfile    [keyfile   ] The key file to use
     -o, --outfile    [outfile   ] Output file when operating on a single file
     -p, --password   [password  ] Password for encryption or decryption

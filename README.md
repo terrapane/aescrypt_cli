@@ -29,6 +29,13 @@ Note that while it is possible to build the software from source code,
 a license is required to use AES Crypt.  Refer to the AES Crypt site
 [here](https://www.aescrypt.com/license.html).
 
+If you want to verify that everything is working properly, you can run the
+test code once the build completes like this:
+
+```bash
+cmake --build build --target test
+```
+
 If you want to install the `aescrypt` binary and the man page, do this:
 
 ```bash
@@ -54,11 +61,24 @@ cmake -S . -B build -Daescrypt_ENABLE_LICENSE_MODULE:BOOL=OFF
 cmake --build build --config Release --parallel
 ```
 
-If you use Ninja as the generator, then you can build it like Linux/Unix:
+If you want to verify that everything is working properly, you can run the test code once the build completes like this:
+
+```bash
+cmake --build build --target RUN_TESTS --config Debug
+```
+
+If you use Ninja as the generator, one can verify that everything is working
+properly, you can run the test code once the build completes like this:
 
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE:STRING=Release -Daescrypt_ENABLE_LICENSE_MODULE:BOOL=OFF
 cmake --build build --parallel
+```
+
+To run tests when built using Ninja as the generator, use the following command:
+
+```bash
+cmake --build build --target test
 ```
 
 ## Usage

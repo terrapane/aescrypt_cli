@@ -72,7 +72,7 @@ static_assert(CHAR_BIT == 8);
 namespace
 {
 
-// Process control is defined to be "global,"" as it is utilized by the
+// Process control is defined to be "global," as it is utilized by the
 // signal handler and, therefore, needs to be accessible within this module;
 // since it is in an anonymous namespace, it does not actually polite the
 // global namespace

@@ -1,5 +1,10 @@
 # Change Log
 
+v4.7.0
+
+- Updated dependencies
+- Addressed minor nuts when enabling additional compiler warnings
+
 v4.6.0
 
 - Allow stdin to be used for key file input

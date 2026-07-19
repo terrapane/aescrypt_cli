@@ -11,7 +11,7 @@ endif()
 # Fetch the AES Crypt Engine
 FetchContent_Declare(aescrypt_engine
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/aescrypt_engine.git
-    GIT_TAG        v4.1.5
+    GIT_TAG        v4.1.6
     GIT_SHALLOW    true)
 
 # Fetch the AES Crypt Licensing Module for consumer builds
@@ -31,7 +31,7 @@ FetchContent_Declare(program_options
 # Fetch the Console I/O library
 FetchContent_Declare(conio
     GIT_REPOSITORY ${TERRAPANE_SOURCE_URI}/conio.git
-    GIT_TAG        v1.0.7
+    GIT_TAG        v1.0.8
     GIT_SHALLOW    true)
 
 # Fetch the Logger library

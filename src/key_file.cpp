@@ -42,7 +42,7 @@ namespace
 {
 
 // Character set to use for key files
-const std::array<char, 64> Key_Characters =
+const std::array<std::uint8_t, 64> Key_Characters =
 {
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
     'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -379,7 +379,7 @@ SecureU8String ReadKeyFile(Terra::Logger::LoggerPointer parent_logger,
         }
 
         // Store octet is not EOF
-        if (!stream.eof()) key.push_back(octet);
+        if (!stream.eof()) key.push_back(static_cast<std::uint8_t>(octet));
     }
 
     // Close the key file if still open

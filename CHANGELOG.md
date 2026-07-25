@@ -3,7 +3,7 @@
 v4.7.0
 
 - Updated dependencies
-- Addressed minor nuts when enabling additional compiler warnings
+- Addressed minor nits when enabling additional compiler warnings
 
 v4.6.0
 

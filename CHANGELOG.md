@@ -4,6 +4,7 @@ v4.7.0
 
 - Updated dependencies
 - Addressed minor nits when enabling additional compiler warnings
+- CMake changes
 
 v4.6.0
 
